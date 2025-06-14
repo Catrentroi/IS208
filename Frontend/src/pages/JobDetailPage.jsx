@@ -4,91 +4,112 @@ import Header from "../components/Header";
 import SearchSection from "../components/SearchSection";
 import Breadcrumb from "../components/Breadcrumb";
 import JobDetailsCard from "../components/JobDetailsCard";
-import JobDescription from "../components/JobDescription";
 import CompanyInfoCard from "../components/CompanyInfoCard";
 import RelatedJobs from "../components/RelatedJobs";
 import Footer from "../components/Footer";
+import { jobService } from "../api";
 
 const JobDetailPage = () => {
     const { id } = useParams();
     const [jobData, setJobData] = useState(null);
     const [loading, setLoading] = useState(true);
-
-    // Mock job data
-    const mockJobData = {
-        id: 1,
-        title: "Nhân Viên Marketing (Mảng Thú Y/Thủy Sản)",
-        company: "CÔNG TY TNHH PLASMA",
-        salary: "15 - 16 triệu",
-        location: "Hồ Chí Minh",
-        experience: "3 năm",
-        level: "Nhân viên",
-        education: "Đại học",
-        quantity: "2 người",
-        workType: "Toàn thời gian",
-        deadline: "30/06/2025",
-        description: `Mô tả công việc
-- Lập kế hoạch, triển khai, giám sát các chiến dịch quảng cáo/truyền thông (Facebook, TikTok, Instagram, Zalo, Google, SMS Marketing,...
-- Xác định, phân tích khách hàng tiềm năng và đối tượng mục tiêu  
-- Xây dựng chiến lược Marketing & Truyền thông để tiếp cận khách hàng trên các kênh
-- Phân tích xu hướng thị trường, thương hiệu, đối thủ cạnh tranh
-- Theo dõi hiệu quả doanh số các chiến dịch, báo cáo định kỳ
-- Phối hợp quản lý lập ngân sách, tối ưu chi phí
-- Hỗ trợ phát triển sản phẩm và hoạt động nhà hàng
-
-Yêu cầu ứng viên
-- Tốt nghiệp Đại học (Marketing, Quản trị kinh doanh, Thương mại...).
-- Kinh nghiệm từ 3-5 năm chạy quảng cáo
-- Độ tuổi từ 25 tuổi trở lên
-- Ưu tiên ứng viên đã từng làm trong ngành F&B, bán lẻ (không bắt buộc)
-- Có kỹ năng lập kế hoạch, làm việc độc lập và đội nhóm tốt.
-- Giao tiếp tốt, chủ động, nhiệt tình và có trách nhiệm với công việc.
-
-Quyền lợi
-- Lương từ 15 triệu (thỏa thuận tùy theo năng lực).
-- Tham gia BHXH, BHYT, BHTN và các chế độ khác theo quy định.
-- Được đào tạo để định hướng trở thành Marketing Leader.
-- Nghỉ và thưởng các ngày lễ, tết, phép, thăm hỏi, du lịch theo quy định của Công ty.
-- Review & tăng lương theo kết quả hoàn thành công việc của nhân viên.
-
-Địa điểm làm việc: 207C Nguyễn Xí, Phường 26, Quận Bình Thạnh, TP. Hồ Chí Minh
-
-Thời gian làm việc
-- Thứ 2 - Thứ 6 (từ 08:30 đến 17:30)
-- Thứ 7 (từ 08:30 đến 12:30)`,
-        companyInfo: {
-            name: "CÔNG TY TNHH PLASMA",
-            scale: "25-99 nhân viên",
-            field: "Thú y - Thủy sản",
-            address: "207C Nguyễn Xí, Phường 26, Quận Bình Thạnh, TP. Hồ Chí Minh",
-        },
-    };
-
-    // Breadcrumb items
-    const breadcrumbItems = [
-        { label: "Trang chủ", href: "/" },
-        { label: "Việc làm", href: "/search" },
-        { label: "Nhân viên marketing", href: "/search?q=marketing" },
-        { label: "Nhân viên Marketing Mảng Thú Y/Thủy sản" },
-    ];
+    const [error, setError] = useState(null);
+    const [relatedJobs, setRelatedJobs] = useState([]);
 
     useEffect(() => {
-        // Simulate API call
-        setTimeout(() => {
-            setJobData(mockJobData);
-            setLoading(false);
-        }, 1000);
+        // Fetch job data from API
+        const fetchJobData = async () => {
+            try {
+                console.log("Fetching job with ID:", id);
+                const response = await jobService.getJobById(id);
+                console.log("Job API response:", response);
+                
+                if (response && response.success === true && response.data) {
+                    console.log("Setting job data:", response.data);
+                    setJobData(response.data);
+                    
+                    // Fetch related jobs based on job category/skills
+                    fetchRelatedJobs(response.data);
+                } else {
+                    throw new Error("Invalid response structure");
+                }
+            } catch (err) {
+                console.error("Error fetching job:", err);
+                setError("Failed to load job details. Please try again later.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        const fetchRelatedJobs = async (currentJob) => {
+            try {
+                // Use job title keywords or skills to find related jobs
+                const keywords = currentJob.title.split(' ').filter(word => word.length > 3);
+                const filters = {
+                    limit: 6 // Get 6 related jobs
+                };
+                
+                // Add title or skills based filtering
+                if (currentJob.skills && currentJob.skills.length > 0) {
+                    filters.skills = currentJob.skills.join(',');
+                } else if (keywords.length > 0) {
+                    filters.title = keywords[0]; // Use first keyword
+                }
+                
+                const response = await jobService.getAllJobs(filters);
+                
+                if (response && response.data) {
+                    // Filter out the current job
+                    const filteredJobs = response.data.filter(job => job._id !== id);
+                    // Get only the first 6 jobs
+                    setRelatedJobs(filteredJobs.slice(0, 6));
+                }
+            } catch (error) {
+                console.error("Error fetching related jobs:", error);
+            }
+        };
+
+        if (id) {
+            fetchJobData();
+        }
     }, [id]);
 
-    const handleApply = (job) => {
-        console.log("Applying for job:", job);
-        alert(`Ứng tuyển cho vị trí: ${job.title}`);
+    const handleApply = async (applicationData) => {
+        try {
+            await jobService.applyForJob(id, applicationData);
+            alert("Ứng tuyển thành công!");
+        } catch (err) {
+            console.error("Error applying for job:", err);
+            alert("Đã có lỗi xảy ra khi ứng tuyển. Vui lòng thử lại sau.");
+        }
     };
 
-    const handleFavorite = (job) => {
-        console.log("Adding to favorites:", job);
-        alert(`Đã thêm vào danh sách yêu thích: ${job.title}`);
+    // Generate breadcrumb items based on job data
+    const generateBreadcrumbs = () => {
+        const breadcrumbItems = [
+            { label: "Trang chủ", href: "/" },
+            { label: "Việc làm", href: "/search" }
+        ];
+
+        if (jobData) {
+            // Add relevant category if available
+            if (jobData.jobType) {
+                breadcrumbItems.push({
+                    label: jobData.jobType,
+                    href: `/search?jobType=${encodeURIComponent(jobData.jobType)}`
+                });
+            }
+            
+            // Add job title as the last item (non-clickable)
+            breadcrumbItems.push({
+                label: jobData.title
+            });
+        }
+
+        return breadcrumbItems;
     };
+
+    const breadcrumbItems = generateBreadcrumbs();
 
     if (loading) {
         return (
@@ -101,12 +122,14 @@ Thời gian làm việc
         );
     }
 
-    if (!jobData) {
+    if (error || !jobData) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
                     <h1 className="text-3xl font-bold text-red-600 mb-4">Không tìm thấy việc làm</h1>
-                    <p className="text-xl text-gray-600">Việc làm này có thể đã bị xóa hoặc không tồn tại.</p>
+                    <p className="text-xl text-gray-600">
+                        {error || "Việc làm này có thể đã bị xóa hoặc không tồn tại."}
+                    </p>
                 </div>
             </div>
         );
@@ -127,23 +150,29 @@ Thời gian làm việc
             <SearchSection />
 
             <div className="container mx-auto px-6 pb-16">
-                <Breadcrumb items={breadcrumbItems} />
+                <Breadcrumb items={generateBreadcrumbs()} />
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Main Content */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">                    {/* Main Content */}
                     <div className="lg:col-span-2">
-                        <JobDetailsCard job={jobData} onApply={handleApply} onFavorite={handleFavorite} />
-
-                        <JobDescription description={jobData.description} />
+                        <JobDetailsCard job={jobData} onApply={handleApply} />
                     </div>
 
                     {/* Sidebar */}
                     <div className="lg:col-span-1">
-                        <CompanyInfoCard company={jobData.companyInfo} />
+                        <CompanyInfoCard 
+                            company={{
+                                name: jobData.company,
+                                field: jobData.industry,
+                                scale: jobData.companySize,
+                                address: jobData.location,
+                                website: jobData.recruiter?.companyWebsite,
+                                description: jobData.recruiter?.companyDescription
+                            }} 
+                        />
                     </div>
                 </div>
 
-                <RelatedJobs />
+                {relatedJobs.length > 0 && <RelatedJobs jobs={relatedJobs} />}
             </div>
 
             <Footer />

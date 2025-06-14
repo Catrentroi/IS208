@@ -1,13 +1,45 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { candidateService } from "../api";
 
-const JobApplicationModal = ({ isOpen, onClose, job }) => {
+const JobApplicationModal = ({ isOpen, onClose, job, onSubmit }) => {
+    const { user, isAuthenticated } = useAuth();
     const [formData, setFormData] = useState({
         fullName: "",
         email: "",
         phone: "",
+        coverLetter: ""
     });
     const [uploadedFile, setUploadedFile] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [resumeUploaded, setResumeUploaded] = useState(false);
+
+    // If user is logged in, prefill the form with user data
+    useEffect(() => {
+        if (isAuthenticated && user) {
+            // Fetch candidate profile if user is logged in
+            const fetchCandidateProfile = async () => {
+                try {
+                    const candidateData = await candidateService.getMyProfile();
+                    setFormData({
+                        fullName: candidateData.name || user.name || "",
+                        email: user.email || "",
+                        phone: candidateData.phone || "",
+                        coverLetter: ""
+                    });
+                    
+                    // Check if candidate already has a resume uploaded
+                    if (candidateData.resume) {
+                        setResumeUploaded(true);
+                    }
+                } catch (err) {
+                    console.error("Error fetching candidate profile:", err);
+                }
+            };
+            
+            fetchCandidateProfile();
+        }
+    }, [isAuthenticated, user]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -43,29 +75,27 @@ const JobApplicationModal = ({ isOpen, onClose, job }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        // Validate form
-        if (!formData.fullName || !formData.email || !formData.phone) {
-            alert("Vui lòng điền đầy đủ thông tin bắt buộc");
-            return;
-        }
-
-        if (!uploadedFile) {
-            alert("Vui lòng tải lên CV của bạn");
-            return;
-        }
-
         setIsSubmitting(true);
-
+        
         try {
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 2000));
-
-            // Success
-            alert(`Ứng tuyển thành công cho vị trí: ${job?.title || "Nhân Viên Marketing"}`);
-            handleClose();
+            // Upload resume if a new file was selected
+            let resumeId = null;
+            if (uploadedFile && !resumeUploaded) {
+                const resumeData = await candidateService.uploadResume(uploadedFile);
+                resumeId = resumeData.resumeId;
+            }
+            
+            // Submit the application
+            await onSubmit({
+                ...formData,
+                resumeId
+            });
+            
+            // Close the modal
+            onClose();
         } catch (error) {
-            alert("Có lỗi xảy ra, vui lòng thử lại");
+            console.error("Application submission error:", error);
+            alert("Failed to submit your application. Please try again.");
         } finally {
             setIsSubmitting(false);
         }
