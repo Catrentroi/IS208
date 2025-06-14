@@ -25,8 +25,11 @@ const LoginPage = () => {
         }));
     };    // Check if already logged in
     useEffect(() => {
-        if (isAuthenticated) {
-            // Redirect to home page or previous page if already logged in
+        // Only redirect if the user is authenticated AND not currently on the login page
+        // This prevents immediate redirect when the page loads
+        const token = localStorage.getItem('token');
+        const user = localStorage.getItem('user');
+        if (isAuthenticated && token && user) {
             const redirectPath = localStorage.getItem('redirectAfterLogin') || '/';
             localStorage.removeItem('redirectAfterLogin');
             navigate(redirectPath);
