@@ -2,6 +2,8 @@ import api from './config';
 
 // Auth service functions
 const authService = {
+  // Store api reference for direct access
+  api,
   // Login user
   login: async (email, password) => {
     const response = await api.post('/auth/login', { email, password });
@@ -48,6 +50,27 @@ const authService = {
       currentPassword, 
       newPassword 
     });
+    return response.data;
+  },
+  
+  // Request password reset
+  requestPasswordReset: async (email) => {
+    const response = await api.post('/auth/forgot-password', { email });
+    return response.data;
+  },
+  
+  // Reset password with token
+  resetPassword: async (token, newPassword) => {
+    const response = await api.post('/auth/reset-password', { 
+      token, 
+      newPassword 
+    });
+    return response.data;
+  },
+  
+  // Verify email with token
+  verifyEmail: async (token) => {
+    const response = await api.get(`/auth/verify-email/${token}`);
     return response.data;
   }
 };

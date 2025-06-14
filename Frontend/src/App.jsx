@@ -17,7 +17,7 @@ const HRTestManagement = React.lazy(() => import("./pages/HRTestManagement"));
 const HRAccountPage = React.lazy(() => import("./pages/HRAccountPage"));
 
 // Authentication pages
-const LoginPage = React.lazy(() => import("./pages/LoginPage"));
+// Note: LoginPage is already imported directly above
 const RegisterPage = React.lazy(() => import("./pages/RegisterPage"));
 const ForgotPasswordPage = React.lazy(() => import("./pages/ForgotPasswordPage"));
 
@@ -52,11 +52,12 @@ function App() {
                             <Route path="/profile/*" element={<ProfilePage />} />
                             <Route path="/hr/dashboard" element={<HRMainDashboard />} />
                             <Route path="/hr/job-management" element={<HRDashboard />} />
-                            <Route path="/hr/interview-management" element={<HRInterviewManagement />} />
-                            <Route path="/hr/candidate-management" element={<HRCandidateManagement />} />
+                            <Route path="/hr/interview-management" element={<HRInterviewManagement />} />                            <Route path="/hr/candidate-management" element={<HRCandidateManagement />} />
                             <Route path="/hr/test-management" element={<HRTestManagement />} />
                             <Route path="/hr/account" element={<HRAccountPage />} />
                             <Route path="/login" element={<LoginPage />} />
+                            <Route path="/register" element={<RegisterPage />} />
+                            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                         </Routes>
                     </Suspense>
                 </div>

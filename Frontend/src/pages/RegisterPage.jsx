@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { authService } from "../api";
+import { useAuth } from "../contexts/AuthContext";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
@@ -28,11 +30,12 @@ const RegisterPage = () => {
         // Terms
         agreeTerms: false,
         agreeNewsletter: false,
-    });
-    const [isLoading, setIsLoading] = useState(false);
+    });    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -77,21 +80,49 @@ const RegisterPage = () => {
 
     const prevStep = () => {
         setCurrentStep((prev) => Math.max(prev - 1, 1));
-    };
-
+    };    // Check if already logged in
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/');
+        }
+    }, [isAuthenticated, navigate]);
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validateStep(3)) return;
 
         setIsLoading(true);
+        setError(null);
 
-        // Simulate API call
-        setTimeout(() => {
-            console.log("Registration data:", formData);
+        try {
+            // Format the data for API
+            const userData = {
+                name: formData.fullName,
+                email: formData.email,
+                password: formData.password,
+                phone: formData.phone,
+                address: `${formData.address}, ${formData.city}`,
+                dateOfBirth: formData.dateOfBirth,
+                gender: formData.gender,
+                experience: formData.experience,
+                skills: formData.skills,
+                education: formData.education,
+                currentJob: formData.currentJob,
+                role: "candidate" // Default role for registration
+            };
+
+            // Call API to register user
+            await authService.register(userData);
+            
+            // Show success message
             alert("Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.");
-            setIsLoading(false);
             navigate("/login");
-        }, 2000);
+        } catch (err) {
+            console.error("Registration error:", err);
+            setError(err.response?.data?.message || "Đăng ký không thành công. Vui lòng thử lại sau.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const skillOptions = [
@@ -652,9 +683,15 @@ const RegisterPage = () => {
                 <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-emerald-500/20 to-teal-600/20 rounded-full -mr-48 -mt-48 blur-3xl"></div>
                 <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-blue-500/20 to-indigo-600/20 rounded-full -ml-32 -mb-32 blur-3xl"></div>
 
-                <div className="relative z-10 w-full max-w-2xl mx-auto px-6">
-                    {/* Register Card */}
+                <div className="relative z-10 w-full max-w-2xl mx-auto px-6">                    {/* Register Card */}
                     <div className="bg-white/80 backdrop-blur-sm border border-gray-100 rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300">
+                        {/* Error Message */}
+                        {error && (
+                            <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-md">
+                                <p className="text-red-700">{error}</p>
+                            </div>
+                        )}
+                        
                         {/* Header */}
                         <div className="text-center mb-8">
                             <div className="w-20 h-20 bg-gradient-to-br from-emerald-100 to-teal-100 border border-emerald-200 rounded-3xl flex items-center justify-center mx-auto mb-6">

@@ -1,5 +1,7 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { authService } from "../api";
+import { useAuth } from "../contexts/AuthContext";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
@@ -7,25 +9,54 @@ const ForgotPasswordPage = () => {
     const [email, setEmail] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [isEmailSent, setIsEmailSent] = useState(false);
+    const [error, setError] = useState(null);
+    const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();    // Check if already logged in
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/');
+        }
+    }, [isAuthenticated, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
+        setError(null);
 
-        // Simulate API call
-        setTimeout(() => {
-            console.log("Reset password for:", email);
+        try {
+            // Let's check if we need to add a reset password function to authService
+            if (!authService.requestPasswordReset) {
+                // Add the method to authService if it doesn't exist
+                authService.requestPasswordReset = async (email) => {
+                    const response = await authService.api.post('/auth/forgot-password', { email });
+                    return response.data;
+                };
+            }
+
+            // Call the API to request password reset
+            await authService.requestPasswordReset(email);
             setIsEmailSent(true);
+        } catch (err) {
+            console.error("Password reset request error:", err);
+            setError(err.response?.data?.message || "Không thể gửi email đặt lại mật khẩu. Vui lòng thử lại sau.");
+        } finally {
             setIsLoading(false);
-        }, 2000);
+        }
     };
 
-    const handleResendEmail = () => {
+    const handleResendEmail = async () => {
         setIsLoading(true);
-        setTimeout(() => {
+        setError(null);
+        
+        try {
+            await authService.requestPasswordReset(email);
             alert("Email đã được gửi lại!");
+        } catch (err) {
+            console.error("Resend email error:", err);
+            setError(err.response?.data?.message || "Không thể gửi lại email. Vui lòng thử lại sau.");
+        } finally {
             setIsLoading(false);
-        }, 1000);
+        }
     };
 
     return (
@@ -40,8 +71,7 @@ const ForgotPasswordPage = () => {
 
                 <div className="relative z-10 w-full max-w-md mx-auto px-6">
                     {/* Forgot Password Card */}
-                    <div className="bg-white/80 backdrop-blur-sm border border-gray-100 rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300">
-                        {!isEmailSent ? (
+                    <div className="bg-white/80 backdrop-blur-sm border border-gray-100 rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300">                        {!isEmailSent ? (
                             <>
                                 {/* Header */}
                                 <div className="text-center mb-8">
@@ -93,6 +123,13 @@ const ForgotPasswordPage = () => {
                                     </h1>
                                     <p className="text-gray-600">Nhập email để nhận liên kết đặt lại mật khẩu</p>
                                 </div>
+
+                                {/* Error Message */}
+                                {error && (
+                                    <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-md">
+                                        <p className="text-red-700">{error}</p>
+                                    </div>
+                                )}
 
                                 {/* Form */}
                                 <form onSubmit={handleSubmit} className="space-y-6">

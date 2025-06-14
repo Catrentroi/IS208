@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { authService } from "../api";
+import { useAuth } from "../contexts/AuthContext";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
@@ -11,7 +13,9 @@ const LoginPage = () => {
     });
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
+    const { login, isAuthenticated } = useAuth();
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -19,19 +23,42 @@ const LoginPage = () => {
             ...prev,
             [name]: type === "checkbox" ? checked : value,
         }));
-    };
+    };    // Check if already logged in
+    useEffect(() => {
+        if (isAuthenticated) {
+            // Redirect to home page or previous page if already logged in
+            const redirectPath = localStorage.getItem('redirectAfterLogin') || '/';
+            localStorage.removeItem('redirectAfterLogin');
+            navigate(redirectPath);
+        }
+    }, [isAuthenticated, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
+        setError(null);
 
-        // Simulate API call
-        setTimeout(() => {
-            console.log("Login data:", formData);
-            alert("Đăng nhập thành công!");
+        try {
+            // Call login API
+            await login(formData.email, formData.password);
+            
+            // Save "remember me" preference if checked
+            if (formData.rememberMe) {
+                localStorage.setItem('rememberedEmail', formData.email);
+            } else {
+                localStorage.removeItem('rememberedEmail');
+            }
+            
+            // Redirect to home page or intended destination
+            const redirectPath = localStorage.getItem('redirectAfterLogin') || '/';
+            localStorage.removeItem('redirectAfterLogin');
+            navigate(redirectPath);
+        } catch (err) {
+            console.error("Login error:", err);
+            setError(err.response?.data?.message || "Đăng nhập không thành công. Vui lòng kiểm tra email và mật khẩu.");
+        } finally {
             setIsLoading(false);
-            navigate("/");
-        }, 2000);
+        }
     };
 
     return (
@@ -65,8 +92,13 @@ const LoginPage = () => {
                                 Đăng Nhập
                             </h1>
                             <p className="text-gray-600">Chào mừng bạn trở lại với TalentHub</p>
-                        </div>
-
+                        </div>                        {/* Error Message */}
+                        {error && (
+                            <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-md">
+                                <p className="text-red-700">{error}</p>
+                            </div>
+                        )}
+                        
                         {/* Login Form */}
                         <form onSubmit={handleSubmit} className="space-y-6">
                             {/* Email Field */}
