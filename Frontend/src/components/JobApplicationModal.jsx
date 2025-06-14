@@ -5,8 +5,9 @@ const JobApplicationModal = ({ isOpen, onClose, job }) => {
         fullName: "",
         email: "",
         phone: "",
+        coverLetter: "",
+        resume: null,
     });
-    const [uploadedFile, setUploadedFile] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleInputChange = (e) => {
@@ -17,216 +18,246 @@ const JobApplicationModal = ({ isOpen, onClose, job }) => {
         }));
     };
 
-    const handleFileUpload = (e) => {
+    const handleFileChange = (e) => {
         const file = e.target.files[0];
-        if (file) {
-            // Validate file type (PDF, DOC, DOCX)
-            const allowedTypes = [
-                "application/pdf",
-                "application/msword",
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            ];
-            if (!allowedTypes.includes(file.type)) {
-                alert("Chỉ chấp nhận file PDF, DOC, DOCX");
-                return;
-            }
-
-            // Validate file size (max 5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                alert("File không được vượt quá 5MB");
-                return;
-            }
-
-            setUploadedFile(file);
-        }
+        setFormData((prev) => ({
+            ...prev,
+            resume: file,
+        }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        // Validate form
-        if (!formData.fullName || !formData.email || !formData.phone) {
-            alert("Vui lòng điền đầy đủ thông tin bắt buộc");
-            return;
-        }
-
-        if (!uploadedFile) {
-            alert("Vui lòng tải lên CV của bạn");
-            return;
-        }
-
         setIsSubmitting(true);
 
-        try {
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 2000));
-
-            // Success
-            alert(`Ứng tuyển thành công cho vị trí: ${job?.title || "Nhân Viên Marketing"}`);
-            handleClose();
-        } catch (error) {
-            alert("Có lỗi xảy ra, vui lòng thử lại");
-        } finally {
+        // Simulate API call
+        setTimeout(() => {
+            console.log("Application submitted:", formData);
+            alert("Ứng tuyển thành công! Chúng tôi sẽ liên hệ với bạn sớm nhất.");
             setIsSubmitting(false);
-        }
-    };
-
-    const handleClose = () => {
-        setFormData({ fullName: "", email: "", phone: "" });
-        setUploadedFile(null);
-        setIsSubmitting(false);
-        onClose();
-    };
-
-    const handleUploadClick = () => {
-        document.getElementById("cv-upload").click();
+            onClose();
+            // Reset form
+            setFormData({
+                fullName: "",
+                email: "",
+                phone: "",
+                coverLetter: "",
+                resume: null,
+            });
+        }, 2000);
     };
 
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-            <div className="bg-white rounded-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white/95 backdrop-blur-sm border border-gray-100 rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
                 {/* Header */}
-                <div className="bg-green-800 text-white px-8 py-6 rounded-t-2xl relative">
+                <div className="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 className="text-2xl font-bold text-transparent bg-gradient-to-r from-emerald-600 to-teal-700 bg-clip-text">
+                            Ứng tuyển vị trí
+                        </h2>
+                        <p className="text-gray-600 font-semibold mt-1">{job?.title || "Nhân Viên Marketing"}</p>
+                        <p className="text-gray-500 text-sm">{job?.company || "CÔNG TY TNHH PLASMA"}</p>
+                    </div>
                     <button
-                        onClick={handleClose}
-                        className="absolute top-4 right-4 w-8 h-8 bg-gray-400 rounded flex items-center justify-center hover:bg-gray-500 transition-colors"
+                        onClick={onClose}
+                        className="w-10 h-10 bg-gray-100 hover:bg-red-50 border border-gray-200 hover:border-red-300 rounded-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 group"
                     >
-                        <span className="text-white text-lg">×</span>
+                        <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            className="text-gray-400 group-hover:text-red-500 transition-colors duration-300"
+                        >
+                            <path
+                                d="M18 6L6 18M6 6L18 18"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            />
+                        </svg>
                     </button>
-                    <h2 className="text-3xl font-bold mb-2">
-                        Ứng tuyển {job?.title || "Nhân Viên Marketing ADS"} Lương Từ 15 Triệu Yêu Cầu 3 Năm Kinh Nghiệm
-                    </h2>
                 </div>
 
-                {/* Form Content */}
-                <form onSubmit={handleSubmit} className="p-8">
-                    {/* Upload Section */}
-                    <div className="text-center mb-8">
-                        <h3 className="text-3xl font-bold text-black mb-6">Tải CV từ máy tính</h3>
-
-                        {/* Upload Area */}
-                        <div
-                            className="border-2 border-dashed border-green-800 rounded-lg p-16 mb-6 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
-                            onClick={handleUploadClick}
-                        >
-                            <div className="flex flex-col items-center">
-                                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                                    <span className="text-2xl">📄</span>
-                                </div>
-                                {uploadedFile ? (
-                                    <div className="text-center">
-                                        <p className="text-lg font-bold text-green-800 mb-2">
-                                            ✅ Đã tải lên: {uploadedFile.name}
-                                        </p>
-                                        <p className="text-gray-600">
-                                            Kích thước: {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
-                                        </p>
-                                    </div>
-                                ) : (
-                                    <div className="text-center">
-                                        <p className="text-lg font-bold text-gray-700 mb-2">
-                                            Kéo thả file hoặc click để chọn CV
-                                        </p>
-                                        <p className="text-gray-600">Hỗ trợ: PDF, DOC, DOCX (tối đa 5MB)</p>
-                                    </div>
-                                )}
+                {/* Form */}
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Full Name */}
+                    <div>
+                        <label className="block text-gray-700 font-semibold mb-2">Họ và tên *</label>
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-gray-400">
+                                    <path
+                                        d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                    />
+                                    <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" />
+                                </svg>
                             </div>
-                            <input
-                                id="cv-upload"
-                                type="file"
-                                accept=".pdf,.doc,.docx"
-                                onChange={handleFileUpload}
-                                className="hidden"
-                            />
-                        </div>
-
-                        <button
-                            type="button"
-                            onClick={handleUploadClick}
-                            className="bg-gray-600 text-white px-8 py-3 rounded-lg font-bold text-lg hover:bg-gray-700 transition-colors"
-                        >
-                            Upload CV
-                        </button>
-                    </div>
-
-                    {/* Divider */}
-                    <div className="border-t-2 border-gray-300 my-8"></div>
-
-                    {/* Form Fields */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                        <div>
-                            <label className="block text-black font-bold text-xl mb-3">Họ và tên:*</label>
                             <input
                                 type="text"
                                 name="fullName"
                                 value={formData.fullName}
                                 onChange={handleInputChange}
-                                className="w-full px-4 py-4 border border-green-800 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-green-600"
-                                placeholder="Nhập họ và tên"
+                                placeholder="Nhập họ và tên đầy đủ"
                                 required
+                                className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200 bg-gray-50/50 hover:bg-white"
                             />
                         </div>
+                    </div>
 
-                        <div>
-                            <label className="block text-black font-bold text-xl mb-3">Email:*</label>
+                    {/* Email */}
+                    <div>
+                        <label className="block text-gray-700 font-semibold mb-2">Email *</label>
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-gray-400">
+                                    <path
+                                        d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                    />
+                                    <polyline points="22,6 12,13 2,6" stroke="currentColor" strokeWidth="2" />
+                                </svg>
+                            </div>
                             <input
                                 type="email"
                                 name="email"
                                 value={formData.email}
                                 onChange={handleInputChange}
-                                className="w-full px-4 py-4 border border-green-800 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-green-600"
-                                placeholder="Nhập email"
+                                placeholder="Nhập địa chỉ email"
                                 required
+                                className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200 bg-gray-50/50 hover:bg-white"
                             />
                         </div>
+                    </div>
 
-                        <div className="md:col-span-2">
-                            <label className="block text-black font-bold text-xl mb-3">Số điện thoại:*</label>
+                    {/* Phone */}
+                    <div>
+                        <label className="block text-gray-700 font-semibold mb-2">Số điện thoại *</label>
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-gray-400">
+                                    <path
+                                        d="M22 16.92V19.92C22 20.52 21.52 21 20.92 21C9.4 21 0 11.6 0 0.08C0 -0.52 0.48 -1 1.08 -1H4.08C4.68 -1 5.16 -0.52 5.16 0.08C5.16 2.08 5.44 4.04 6 5.92C6.12 6.32 6 6.76 5.72 7.04L4.12 8.64C5.32 11.24 7.76 13.68 10.36 14.88L11.96 13.28C12.24 13 12.68 12.88 13.08 13C14.96 13.56 16.92 13.84 18.92 13.84C19.52 13.84 20 14.32 20 14.92V17.92C20 18.52 19.52 19 18.92 19Z"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                    />
+                                </svg>
+                            </div>
                             <input
                                 type="tel"
                                 name="phone"
                                 value={formData.phone}
                                 onChange={handleInputChange}
-                                className="w-full px-4 py-4 border border-green-800 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-green-600"
                                 placeholder="Nhập số điện thoại"
                                 required
+                                className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200 bg-gray-50/50 hover:bg-white"
                             />
                         </div>
                     </div>
 
-                    {/* Warning Section */}
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-8">
-                        <h4 className="text-red-600 font-bold text-3xl mb-4">Lưu ý</h4>
-                        <p className="text-black font-bold text-lg leading-relaxed">
-                            TalentHub khuyên tất cả các bạn hãy luôn cẩn trọng trong quá trình tìm việc và chủ động
-                            nghiên cứu về thông tin công ty, vị trí việc làm trước khi ứng tuyển.
-                            <br />
-                            <br />
-                            Ứng viên cần có trách nhiệm với hành vi ứng tuyển của mình. Nếu bạn gặp phải tin tuyển dụng
-                            hoặc nhận được liên lạc đáng ngờ của nhà tuyển dụng, hãy báo cáo ngay cho TalentHub qua
-                            email TalentHub.support@gmail.com để được hỗ trợ kịp thời.
-                        </p>
+                    {/* Resume Upload */}
+                    <div>
+                        <label className="block text-gray-700 font-semibold mb-2">CV/Resume *</label>
+                        <div className="relative">
+                            <input
+                                type="file"
+                                onChange={handleFileChange}
+                                accept=".pdf,.doc,.docx"
+                                required
+                                className="sr-only"
+                                id="resume-upload"
+                            />
+                            <label
+                                htmlFor="resume-upload"
+                                className="w-full flex items-center justify-center px-4 py-6 border-2 border-dashed border-gray-300 rounded-2xl cursor-pointer hover:border-emerald-500 hover:bg-emerald-50/50 transition-all duration-200 group"
+                            >
+                                <div className="text-center">
+                                    <svg
+                                        width="48"
+                                        height="48"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        className="mx-auto mb-3 text-gray-400 group-hover:text-emerald-500 transition-colors duration-200"
+                                    >
+                                        <path
+                                            d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                        />
+                                        <polyline points="14,2 14,8 20,8" stroke="currentColor" strokeWidth="2" />
+                                        <line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" strokeWidth="2" />
+                                        <line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" strokeWidth="2" />
+                                        <polyline points="10,9 9,9 8,9" stroke="currentColor" strokeWidth="2" />
+                                    </svg>
+                                    {formData.resume ? (
+                                        <div>
+                                            <p className="text-emerald-600 font-semibold">{formData.resume.name}</p>
+                                            <p className="text-gray-500 text-sm">Nhấp để thay đổi file</p>
+                                        </div>
+                                    ) : (
+                                        <div>
+                                            <p className="text-gray-600 font-semibold">Tải lên CV/Resume</p>
+                                            <p className="text-gray-500 text-sm">PDF, DOC, DOCX (tối đa 5MB)</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </label>
+                        </div>
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    {/* Cover Letter */}
+                    <div>
+                        <label className="block text-gray-700 font-semibold mb-2">Thư xin việc</label>
+                        <textarea
+                            name="coverLetter"
+                            value={formData.coverLetter}
+                            onChange={handleInputChange}
+                            placeholder="Viết vài dòng về bản thân và lý do bạn phù hợp với vị trí này..."
+                            rows="4"
+                            className="w-full px-4 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200 bg-gray-50/50 hover:bg-white resize-none"
+                        />
+                    </div>
+
+                    {/* Submit Buttons */}
+                    <div className="flex gap-4 pt-4">
                         <button
                             type="button"
-                            onClick={handleClose}
-                            className="bg-gray-400 text-white px-8 py-3 rounded-lg font-bold text-xl hover:bg-gray-500 transition-colors"
+                            onClick={onClose}
+                            className="flex-1 bg-white border-2 border-gray-200 text-gray-700 py-4 rounded-2xl font-semibold hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 hover:scale-105"
                         >
-                            Hủy
+                            Hủy bỏ
                         </button>
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className={`px-16 py-3 rounded-lg font-bold text-xl transition-colors ${
-                                isSubmitting ? "bg-gray-400 cursor-not-allowed" : "bg-green-800 hover:bg-green-900"
-                            } text-white`}
+                            className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 text-white py-4 rounded-2xl font-semibold hover:shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
-                            {isSubmitting ? "Đang gửi..." : "Nộp hồ sơ ứng tuyển ngay"}
+                            {isSubmitting ? (
+                                <>
+                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    Đang gửi...
+                                </>
+                            ) : (
+                                <>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                        <path
+                                            d="M12 19L19 12L12 5M19 12H5"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        />
+                                    </svg>
+                                    Gửi ứng tuyển
+                                </>
+                            )}
                         </button>
                     </div>
                 </form>
