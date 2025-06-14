@@ -1,47 +1,145 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import JobApplicationModal from "./JobApplicationModal";
+import { jobService, applicationService } from "../api";
 
-const JobDetailsCard = ({ job, onApply, onFavorite }) => {
+const JobDetailsCard = ({ onApply, onFavorite }) => {
+    const [job, setJob] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const { id } = useParams();
+
+    useEffect(() => {
+        const fetchJobDetails = async () => {
+            try {
+                console.log("Fetching job details for ID:", id);
+                const response = await jobService.getJobById(id);
+                console.log("Job API response:", response); // Add logging
+                
+                // Extract job data from the correct response structure
+                if (response && response.success === true && response.data) {
+                    console.log("Setting job data:", response.data);
+                    setJob(response.data);
+                } else if (response && response.data) {
+                    // Some APIs might just return the data directly
+                    console.log("Setting job data directly:", response.data);
+                    setJob(response.data);
+                } else {
+                    console.error("Invalid response structure:", response);
+                    throw new Error("Invalid response structure");
+                }
+                
+                setLoading(false);
+            } catch (err) {
+                console.error("Error fetching job details:", err);
+                setError("Failed to load job details. Please try again later.");
+                setLoading(false);
+            }
+        };
+
+        if (id) {
+            fetchJobDetails();
+        }
+    }, [id]);
 
     const handleApplyClick = () => {
+        // Check if user is logged in by checking for token
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+            // If not logged in, redirect to login page
+            alert("Please log in to apply for this job");
+            // Add the current location to localStorage to redirect back after login
+            localStorage.setItem('redirectAfterLogin', window.location.pathname);
+            window.location.href = '/login';
+            return;
+        }
+        
+        // If logged in, open application modal
         setIsModalOpen(true);
     };
+
+    const handleSubmitApplication = async (applicationData) => {
+        try {
+            await applicationService.createApplication(id, applicationData);
+            setIsModalOpen(false);
+            // Show success notification
+            alert("Application submitted successfully!");
+        } catch (err) {
+            console.error("Error submitting application:", err);
+            // Show error notification
+            alert("Failed to submit application. Please try again.");
+        }
+    };    if (loading) return <div className="text-center p-8">Loading job details...</div>;
+    if (error) return <div className="text-red-500 p-8">{error}</div>;
+    if (!job) return <div className="text-center p-8">Job not found</div>;
+    
+    // Format salary for display
+    const formatSalary = (salary) => {
+        if (!salary) return "Negotiable";
+        
+        // If salary is just a string (legacy data)
+        if (typeof salary === 'string') return salary;
+        
+        // Format based on available properties
+        let formattedSalary = '';
+        
+        if (salary.min && salary.max) {
+            formattedSalary = `${salary.min.toLocaleString()} - ${salary.max.toLocaleString()}`;
+        } else if (salary.min) {
+            formattedSalary = `From ${salary.min.toLocaleString()}`;
+        } else if (salary.max) {
+            formattedSalary = `Up to ${salary.max.toLocaleString()}`;
+        } else {
+            return "Negotiable";
+        }
+        
+        // Add currency if available
+        if (salary.currency) {
+            formattedSalary += ` ${salary.currency}`;
+        }
+        
+        return formattedSalary;
+    };
+    
+    console.log("Rendering job:", job);
+
     const jobDetails = [
         {
             label: "Mức lương",
-            value: job?.salary || "15 - 16 triệu",
+            value: formatSalary(job.salary),
             icon: "💰",
         },
         {
             label: "Địa điểm",
-            value: job?.location || "Hồ Chí Minh",
+            value: job.location || "Không có thông tin",
             icon: "📍",
         },
         {
             label: "Kinh nghiệm",
-            value: job?.experience || "3 năm",
+            value: job.experience || "Không yêu cầu",
             icon: "⚡",
         },
         {
-            label: "Cấp bậc",
-            value: job?.level || "Nhân viên",
-            icon: "👤",
+            label: "Loại công việc",
+            value: job.jobType || "Toàn thời gian",
+            icon: "💼",
         },
         {
             label: "Trình độ học vấn",
-            value: job?.education || "Đại học",
+            value: job.educationLevel || "Không yêu cầu",
             icon: "🎓",
         },
         {
-            label: "Số lượng tuyển",
-            value: job?.quantity || "2 người",
-            icon: "👥",
+            label: "Trạng thái",
+            value: job.status || "Open",
+            icon: "📅",
         },
         {
-            label: "Hình thức làm việc",
-            value: job?.workType || "Toàn thời gian",
-            icon: "💼",
+            label: "Ngày đăng",
+            value: job.createdAt ? new Date(job.createdAt).toLocaleDateString() : "Không có thông tin",
+            icon: "📆",
         },
     ];
 
@@ -64,7 +162,9 @@ const JobDetailsCard = ({ job, onApply, onFavorite }) => {
                     {/* Action Buttons */}
                     <div className="flex items-center gap-4">
                         <div className="bg-gray-400 text-white px-8 py-3 rounded-lg font-bold text-lg">
-                            Hạn nộp hồ sơ: 30/06/2025
+                            Hạn nộp hồ sơ: {job.applicationDeadline 
+                                ? new Date(job.applicationDeadline).toLocaleDateString() 
+                                : '30/06/2025'}
                         </div>
                         <button
                             onClick={handleApplyClick}
@@ -83,7 +183,7 @@ const JobDetailsCard = ({ job, onApply, onFavorite }) => {
             </div>
 
             {/* Job Details Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 {jobDetails.map((detail, index) => (
                     <div key={index} className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
@@ -97,8 +197,64 @@ const JobDetailsCard = ({ job, onApply, onFavorite }) => {
                 ))}
             </div>
 
+            {/* Job Description */}
+            <div className="mt-8 bg-white p-6 rounded-lg shadow-sm">
+                <h2 className="text-2xl font-bold text-green-800 mb-4">Mô tả công việc</h2>
+                <div className="prose max-w-none">
+                    <p className="text-gray-700 whitespace-pre-line">{job.description}</p>
+                </div>
+            </div>
+
+            {/* Job Requirements */}
+            <div className="mt-8 bg-white p-6 rounded-lg shadow-sm">
+                <h2 className="text-2xl font-bold text-green-800 mb-4">Yêu cầu công việc</h2>
+                <div className="prose max-w-none">
+                    <p className="text-gray-700 whitespace-pre-line">{job.requirements}</p>
+                </div>
+            </div>
+
+            {/* Skills */}
+            {job.skills && job.skills.length > 0 && (
+                <div className="mt-8 bg-white p-6 rounded-lg shadow-sm">
+                    <h2 className="text-2xl font-bold text-green-800 mb-4">Kỹ năng</h2>
+                    <div className="flex flex-wrap gap-2">
+                        {job.skills.map((skill, index) => (
+                            <span key={index} className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                                {skill}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Company Information */}
+            <div className="mt-8 bg-white p-6 rounded-lg shadow-sm">
+                <h2 className="text-2xl font-bold text-green-800 mb-4">Thông tin công ty</h2>
+                <div className="flex items-start gap-6">
+                    <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <div className="w-10 h-10 bg-gray-300 rounded"></div>
+                    </div>
+                    <div>
+                        <h3 className="text-xl font-bold mb-2">{job.company}</h3>
+                        {job.recruiter && job.recruiter.companyDescription && (
+                            <p className="text-gray-600 mb-4 whitespace-pre-line">{job.recruiter.companyDescription}</p>
+                        )}
+                        {job.recruiter && job.recruiter.companyWebsite && (
+                            <a 
+                                href={job.recruiter.companyWebsite} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:underline"
+                            >
+                                {job.recruiter.companyWebsite}
+                            </a>
+                        )}
+                    </div>
+                </div>
+            </div>
+
             {/* Application Modal */}
-            <JobApplicationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} job={job} />
+            <JobApplicationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} job={job} onSubmit={handleSubmitApplication} />
         </div>
     );
 };

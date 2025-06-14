@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { candidateService } from "../api";
 
-const JobApplicationModal = ({ isOpen, onClose, job }) => {
+const JobApplicationModal = ({ isOpen, onClose, job, onSubmit }) => {
+    const { user, isAuthenticated } = useAuth();
     const [formData, setFormData] = useState({
         fullName: "",
         email: "",
@@ -9,6 +12,34 @@ const JobApplicationModal = ({ isOpen, onClose, job }) => {
         resume: null,
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [resumeUploaded, setResumeUploaded] = useState(false);
+
+    // If user is logged in, prefill the form with user data
+    useEffect(() => {
+        if (isAuthenticated && user) {
+            // Fetch candidate profile if user is logged in
+            const fetchCandidateProfile = async () => {
+                try {
+                    const candidateData = await candidateService.getMyProfile();
+                    setFormData({
+                        fullName: candidateData.name || user.name || "",
+                        email: user.email || "",
+                        phone: candidateData.phone || "",
+                        coverLetter: ""
+                    });
+                    
+                    // Check if candidate already has a resume uploaded
+                    if (candidateData.resume) {
+                        setResumeUploaded(true);
+                    }
+                } catch (err) {
+                    console.error("Error fetching candidate profile:", err);
+                }
+            };
+            
+            fetchCandidateProfile();
+        }
+    }, [isAuthenticated, user]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;

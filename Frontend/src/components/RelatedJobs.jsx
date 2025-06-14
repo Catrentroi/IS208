@@ -5,55 +5,14 @@ import JobApplicationModal from "./JobApplicationModal";
 const RelatedJobs = ({ jobs, onJobClick }) => {
     const [selectedJob, setSelectedJob] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-
+    
     const handleApplyClick = (job) => {
         setSelectedJob(job);
         setIsModalOpen(true);
     };
-    const relatedJobs = jobs || [
-        {
-            id: 1,
-            title: "Nhân Viên Marketing (Mảng Thú Y / Thủy Sản)",
-            company: "CÔNG TY TNHH PLASMA",
-            salary: "10 - 15 triệu",
-            location: "Hồ Chí Minh",
-        },
-        {
-            id: 2,
-            title: "Nhân Viên Marketing (Mảng Thú Y / Thủy Sản)",
-            company: "CÔNG TY TNHH PLASMA",
-            salary: "10 - 15 triệu",
-            location: "Hồ Chí Minh",
-        },
-        {
-            id: 3,
-            title: "Nhân Viên Marketing (Mảng Thú Y / Thủy Sản)",
-            company: "CÔNG TY TNHH PLASMA",
-            salary: "10 - 15 triệu",
-            location: "Hồ Chí Minh",
-        },
-        {
-            id: 4,
-            title: "Nhân Viên Marketing (Mảng Thú Y / Thủy Sản)",
-            company: "CÔNG TY TNHH PLASMA",
-            salary: "10 - 15 triệu",
-            location: "Hồ Chí Minh",
-        },
-        {
-            id: 5,
-            title: "Nhân Viên Marketing (Mảng Thú Y / Thủy Sản)",
-            company: "CÔNG TY TNHH PLASMA",
-            salary: "10 - 15 triệu",
-            location: "Hồ Chí Minh",
-        },
-        {
-            id: 6,
-            title: "Nhân Viên Marketing (Mảng Thú Y / Thủy Sản)",
-            company: "CÔNG TY TNHH PLASMA",
-            salary: "10 - 15 triệu",
-            location: "Hồ Chí Minh",
-        },
-    ];
+    
+    // Only use the jobs passed from props
+    const relatedJobs = jobs || [];
 
     const handlePrevious = () => {
         console.log("Previous jobs");
@@ -84,14 +43,13 @@ const RelatedJobs = ({ jobs, onJobClick }) => {
                         <div className="w-6 h-6 bg-gray-600 rounded"></div>
                     </button>
                 </div>
-            </div>
-
-            {/* Jobs Grid */}
+            </div>            {/* Jobs Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {relatedJobs.slice(0, 6).map((job) => (
                     <div
-                        key={job.id}
+                        key={job._id}
                         className="bg-yellow-50 border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer"
+                        onClick={() => window.location.href = `/job/${job._id}`}
                     >
                         <div className="flex items-start gap-4">
                             {/* Company Logo */}
@@ -106,12 +64,18 @@ const RelatedJobs = ({ jobs, onJobClick }) => {
 
                                 {/* Tags */}
                                 <div className="flex flex-wrap gap-2 mb-4">
-                                    <span className="bg-gray-800 text-white px-3 py-1 rounded-full text-xs font-bold">
-                                        {job.salary}
-                                    </span>
-                                    <span className="bg-gray-800 text-white px-3 py-1 rounded-full text-xs font-bold">
-                                        {job.location}
-                                    </span>
+                                    {job.salary && (
+                                        <span className="bg-gray-800 text-white px-3 py-1 rounded-full text-xs font-bold">
+                                            {typeof job.salary === 'object' ? 
+                                                `${job.salary.min || ''} - ${job.salary.max || ''} ${job.salary.currency || ''}` : 
+                                                job.salary}
+                                        </span>
+                                    )}
+                                    {job.location && (
+                                        <span className="bg-gray-800 text-white px-3 py-1 rounded-full text-xs font-bold">
+                                            {job.location}
+                                        </span>
+                                    )}
                                 </div>
 
                                 {/* Apply Button */}

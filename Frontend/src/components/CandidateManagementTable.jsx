@@ -1,64 +1,50 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { candidateService, applicationService } from "../api";
+import useApi from "../hooks/useApi";
 
 const CandidateManagementTable = () => {
-    const [candidates] = useState([
-        {
-            id: 1,
-            candidateName: "Nguyễn Văn A",
-            applicationDate: "25/5/2025",
-            position: "Business Analyst",
-            status: "Chờ xét duyệt",
-        },
-        {
-            id: 2,
-            candidateName: "Trần Thị B",
-            applicationDate: "24/5/2025",
-            position: "Frontend Developer",
-            status: "Đã duyệt",
-        },
-        {
-            id: 3,
-            candidateName: "Lê Văn C",
-            applicationDate: "23/5/2025",
-            position: "Backend Developer",
-            status: "Chờ xét duyệt",
-        },
-        {
-            id: 4,
-            candidateName: "Phạm Thị D",
-            applicationDate: "22/5/2025",
-            position: "UI/UX Designer",
-            status: "Từ chối",
-        },
-        {
-            id: 5,
-            candidateName: "Hoàng Văn E",
-            applicationDate: "21/5/2025",
-            position: "Project Manager",
-            status: "Đã duyệt",
-        },
-        {
-            id: 6,
-            candidateName: "Ngô Thị F",
-            applicationDate: "20/5/2025",
-            position: "Data Analyst",
-            status: "Chờ xét duyệt",
-        },
-        {
-            id: 7,
-            candidateName: "Vũ Văn G",
-            applicationDate: "19/5/2025",
-            position: "DevOps Engineer",
-            status: "Đã duyệt",
-        },
-        {
-            id: 8,
-            candidateName: "Đặng Thị H",
-            applicationDate: "18/5/2025",
-            position: "QA Tester",
-            status: "Chờ xét duyệt",
-        },
-    ]);
+    const [filters, setFilters] = useState({
+        status: "all",
+        position: "all",
+    });
+
+    // Use our custom hook to fetch candidates
+    const {
+        data: candidatesData,
+        loading,
+        error,
+        execute: fetchCandidates,
+    } = useApi(candidateService.getAllCandidates);
+
+    // Extract candidates from response data
+    const candidates = candidatesData?.candidates || [];
+
+    // Fetch applications for each candidate
+    const {
+        data: applicationsData,
+        loading: loadingApplications,
+    } = useApi(applicationService.getAllApplications);
+
+    // Extract applications from response data
+    const applications = applicationsData?.applications || [];
+
+    // Update candidate status
+    const handleUpdateStatus = async (candidateId, newStatus) => {
+        try {
+            // Find the application for this candidate
+            const application = applications.find((app) => app.candidate === candidateId);
+
+            if (application) {
+                await applicationService.updateApplicationStatus(application._id, newStatus);
+                // Refresh data
+                fetchCandidates();
+                alert("Status updated successfully!");
+            }
+        } catch (err) {
+            console.error("Error updating status:", err);
+            alert("Failed to update status. Please try again.");
+        }
+    };
 
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -89,6 +75,37 @@ const CandidateManagementTable = () => {
                 return "bg-[#85A947] text-[#1E1E1E]";
         }
     };
+
+    // Loading state
+    if (loading || loadingApplications) {
+        return (
+            <div className="bg-white rounded-lg shadow p-6">
+                <div className="flex justify-center items-center h-64">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                </div>
+            </div>
+        );
+    }
+    
+    // Error state
+    if (error) {
+        return (
+            <div className="bg-white rounded-lg shadow p-6">
+                <div className="flex justify-center items-center h-64">
+                    <div className="text-red-500 text-center">
+                        <p className="text-xl font-semibold">Error loading candidates</p>
+                        <p className="mt-2">{error}</p>
+                        <button 
+                            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                            onClick={() => fetchCandidates()}
+                        >
+                            Try Again
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="w-full">
