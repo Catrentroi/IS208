@@ -8,15 +8,49 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [initialCheckDone, setInitialCheckDone] = useState(false);
 
   useEffect(() => {
     // Check if user is already logged in
     const checkLoginStatus = () => {
-      const currentUser = authService.getCurrentUser();
-      if (currentUser) {
-        setUser(currentUser);
+      try {
+        // Validate both token and user exist in localStorage
+        const token = localStorage.getItem('token');
+        const userStr = localStorage.getItem('user');
+        
+        // Only set user if we have both token and valid user data
+        if (token && userStr) {
+          try {
+            const currentUser = JSON.parse(userStr);
+            if (currentUser && currentUser.id) { // Make sure user object is valid
+              setUser(currentUser);
+            } else {
+              // Invalid user object, clear auth data
+              localStorage.removeItem('token');
+              localStorage.removeItem('user');
+            }
+          } catch (e) {
+            // Error parsing user JSON, clear auth data
+            console.error("Error parsing user data:", e);
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+          }
+        } else {
+          // If either token or user is missing, clear both
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          setUser(null);
+        }
+      } catch (err) {
+        console.error("Error checking login status:", err);
+        // On any error, clear auth data
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+        setInitialCheckDone(true);
       }
-      setIsLoading(false);
     };
 
     checkLoginStatus();
@@ -45,7 +79,6 @@ export const AuthProvider = ({ children }) => {
   const updateUserProfile = (updatedUser) => {
     setUser({ ...user, ...updatedUser });
   };
-
   const value = {
     user,
     isLoading,
@@ -53,7 +86,8 @@ export const AuthProvider = ({ children }) => {
     logout,
     register,
     updateUserProfile,
-    isAuthenticated: !!user
+    isAuthenticated: !!user,
+    initialCheckDone
   };
 
   return (
