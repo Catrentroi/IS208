@@ -148,8 +148,8 @@ const JobDetailsCard = ({ job, onApply }) => {
 
             {/* Job Details Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                {jobDetails.map((detail, index) => (
-                    <div key={index} className="flex items-center gap-4">
+                {jobDetails.map((detail) => (
+                    <div key={`job-detail-${detail.label}`} className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                             <span className="text-2xl">{detail.icon}</span>
                         </div>
@@ -183,7 +183,10 @@ const JobDetailsCard = ({ job, onApply }) => {
                     <h2 className="text-2xl font-bold text-green-800 mb-4">Kỹ năng</h2>
                     <div className="flex flex-wrap gap-2">
                         {job.skills.map((skill, index) => (
-                            <span key={index} className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                            <span 
+                                key={`skill-${skill}-${index}`} 
+                                className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium"
+                            >
                                 {skill}
                             </span>
                         ))}

@@ -6,6 +6,33 @@ const JobList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const formatSalary = (salary) => {
+    if (!salary) return 'Negotiable';
+
+    // If salary is just a string (legacy data)
+    if (typeof salary === 'string') return salary;
+
+    // Format based on available properties
+    let formattedSalary = '';
+
+    if (salary.min && salary.max) {
+      formattedSalary = `${salary.min.toLocaleString()} - ${salary.max.toLocaleString()}`;
+    } else if (salary.min) {
+      formattedSalary = `From ${salary.min.toLocaleString()}`;
+    } else if (salary.max) {
+      formattedSalary = `Up to ${salary.max.toLocaleString()}`;
+    } else {
+      return 'Negotiable';
+    }
+
+    // Add currency if available
+    if (salary.currency) {
+      formattedSalary += ` ${salary.currency}`;
+    }
+
+    return formattedSalary;
+  };
+
   useEffect(() => {
     // Fetch jobs when component mounts
     const fetchJobs = async () => {
@@ -38,9 +65,13 @@ const JobList = () => {
               <h3>{job.title}</h3>
               <p className="company">{job.company}</p>
               <p className="location">{job.location}</p>
-              <p className="description">{job.description.substring(0, 100)}...</p>
+              <p className="description">
+                {job.description.substring(0, 100)}...
+              </p>
               <div className="job-footer">
-                <span className="salary">${job.salary}</span>
+                <span className="salary">
+                  {formatSalary(job.salary)}
+                </span>
                 <button className="view-details">View Details</button>
               </div>
             </div>

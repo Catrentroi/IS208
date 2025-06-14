@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import HeroSection from "../components/HeroSection";
 import SearchSection from "../components/SearchSection";
@@ -6,54 +6,93 @@ import JobCard from "../components/JobCard";
 import CompanyCard from "../components/CompanyCard";
 import CTASection from "../components/CTASection";
 import Footer from "../components/Footer";
+import { jobService } from "../api";
 
 const Homepage = () => {
-    // Mock data cho các việc làm
-    const mockJobs = [
-        {
-            id: 1,
-            title: "Nhân Viên Marketing (Mảng Thú Y / Thủy Sản)",
-            company: "CÔNG TY TNHH PLASMA",
-            salary: "10 - 15 triệu",
-            location: "Hồ Chí Minh",
-        },
-        {
-            id: 2,
-            title: "Frontend Developer",
-            company: "CÔNG TY TNHH CÔNG NGHỆ ABC",
-            salary: "15 - 25 triệu",
-            location: "Hà Nội",
-        },
-        {
-            id: 3,
-            title: "Business Analyst",
-            company: "CÔNG TY CỔ PHẦN DEF",
-            salary: "20 - 30 triệu",
-            location: "Đà Nẵng",
-        },
-    ];
+    const [jobs, setJobs] = useState([]);
+    const [companies, setCompanies] = useState([]);
+    const [loading, setLoading] = useState({
+        jobs: true,
+        companies: true
+    });
+    const [error, setError] = useState({
+        jobs: null,
+        companies: null
+    });
+    const [selectedLocation, setSelectedLocation] = useState("TP. Hồ Chí Minh");
 
-    // Mock data cho các công ty
-    const mockCompanies = [
-        {
-            id: 1,
-            name: "CÔNG TY CỔ PHẦN VINCOM RETAIL",
-            industry: "Bất động sản",
-            jobCount: 10,
-        },
-        {
-            id: 2,
-            name: "CÔNG TY TNHH SHOPEE",
-            industry: "Thương mại điện tử",
-            jobCount: 25,
-        },
-        {
-            id: 3,
-            name: "CÔNG TY CỔ PHẦN FPT",
-            industry: "Công nghệ thông tin",
-            jobCount: 15,
-        },
-    ];
+    // Fetch jobs from API
+    useEffect(() => {
+        const fetchJobs = async () => {
+            try {
+                setLoading(prev => ({ ...prev, jobs: true }));
+                // Fetch featured/recent jobs
+                const response = await jobService.getAllJobs({
+                    limit: 20,
+                    sort: "-createdAt", // Sort by newest first
+                });
+                
+                if (response && response.data) {
+                    setJobs(response.data);
+                } else {
+                    setJobs([]);
+                }
+            } catch (err) {
+                console.error("Error fetching jobs:", err);
+                setError(prev => ({ ...prev, jobs: "Failed to load jobs. Please try again later." }));
+            } finally {
+                setLoading(prev => ({ ...prev, jobs: false }));
+            }
+        };
+
+        fetchJobs();
+    }, []);
+
+    // Fetch companies from API (get top companies with most jobs)
+    useEffect(() => {
+        const fetchCompanies = async () => {
+            try {
+                setLoading(prev => ({ ...prev, companies: true }));
+                // For now, we'll use the recruiter data from jobs as a stand-in for companies
+                const response = await jobService.getAllJobs({
+                    limit: 50, // Get more jobs to extract company info
+                    fields: "company,recruiter,location,industry" // Only fetch the fields we need
+                });
+                
+                if (response && response.data && response.data.length > 0) {
+                    // Extract unique companies from job data
+                    const uniqueCompanies = [];
+                    const companyMap = {};
+                    
+                    response.data.forEach(job => {
+                        if (job.company && !companyMap[job.company]) {
+                            companyMap[job.company] = {
+                                id: job.recruiter?._id || job._id,
+                                name: job.company,
+                                industry: job.industry || "Various industries",
+                                jobCount: 1
+                            };
+                        } else if (job.company && companyMap[job.company]) {
+                            companyMap[job.company].jobCount++;
+                        }
+                    });
+                    
+                    // Convert to array and sort by job count
+                    const companiesArray = Object.values(companyMap);
+                    companiesArray.sort((a, b) => b.jobCount - a.jobCount);
+                    
+                    setCompanies(companiesArray.slice(0, 6)); // Get top 6 companies
+                } else {
+                    setCompanies([]);
+                }
+            } catch (err) {
+                console.error("Error fetching companies:", err);
+                setError(prev => ({ ...prev, companies: "Failed to load company data. Please try again later." }));
+            } finally {
+                setLoading(prev => ({ ...prev, companies: false }));
+            }
+        };        fetchCompanies();
+    }, []);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
@@ -101,12 +140,45 @@ const Homepage = () => {
                         </div>
                     </div>                    {/* Jobs Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                        {/* Conditionally render JobCard components */}
-                        {Array(20)
-                            .fill(0)
-                            .map((_, index) => (
-                                <JobCard key={index} job={mockJobs[index % mockJobs.length]} />
-                            ))}
+                        {loading.jobs ? (
+                            // Show loading skeleton
+                            Array(6).fill(0).map((_, index) => (
+                                <div key={index} className="bg-white/80 border border-gray-100 rounded-3xl p-6 animate-pulse">
+                                    <div className="flex items-start justify-between mb-4">
+                                        <div className="w-16 h-16 bg-gray-200 rounded-2xl"></div>
+                                        <div className="w-10 h-10 bg-gray-200 rounded-2xl"></div>
+                                    </div>
+                                    <div className="h-6 bg-gray-200 rounded-md w-3/4 mb-3"></div>
+                                    <div className="h-4 bg-gray-200 rounded-md w-1/2 mb-4"></div>
+                                    <div className="flex flex-col gap-2 mb-6">
+                                        <div className="h-10 bg-gray-200 rounded-2xl"></div>
+                                        <div className="h-10 bg-gray-200 rounded-2xl"></div>
+                                    </div>
+                                    <div className="h-12 bg-gray-200 rounded-2xl w-full"></div>
+                                </div>
+                            ))
+                        ) : error.jobs ? (
+                            // Show error message
+                            <div className="col-span-1 md:col-span-2 lg:col-span-3 p-8 text-center">
+                                <div className="text-red-500 text-lg mb-4">{error.jobs}</div>
+                                <button 
+                                    onClick={() => window.location.reload()} 
+                                    className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
+                                >
+                                    Thử lại
+                                </button>
+                            </div>
+                        ) : jobs.length > 0 ? (
+                            // Show jobs from API
+                            jobs.map((job, index) => (
+                                <JobCard key={job._id || index} job={job} />
+                            ))
+                        ) : (
+                            // No jobs found
+                            <div className="col-span-1 md:col-span-2 lg:col-span-3 p-8 text-center">
+                                <p className="text-gray-500 text-lg">Không tìm thấy việc làm nào.</p>
+                            </div>
+                        )}
                     </div>
 
                     {/* Modern Pagination */}
@@ -164,15 +236,40 @@ const Homepage = () => {
                         <p className="text-gray-600 text-lg max-w-2xl mx-auto">
                             Khám phá cơ hội nghề nghiệp tại những công ty hàng đầu với môi trường làm việc chuyên nghiệp
                         </p>
-                    </div>
-
-                    {/* Companies Grid */}
+                    </div>                    {/* Companies Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                        {Array(9)
-                            .fill(0)
-                            .map((_, index) => (
-                                <CompanyCard key={index} company={mockCompanies[index % mockCompanies.length]} />
-                            ))}
+                        {loading.companies ? (
+                            // Show loading skeleton
+                            Array(6).fill(0).map((_, index) => (
+                                <div key={index} className="bg-white/80 border border-gray-100 rounded-3xl p-6 animate-pulse">
+                                    <div className="w-16 h-16 bg-gray-200 rounded-2xl mb-4"></div>
+                                    <div className="h-6 bg-gray-200 rounded-md w-3/4 mb-3"></div>
+                                    <div className="h-4 bg-gray-200 rounded-md w-1/2 mb-4"></div>
+                                    <div className="h-8 bg-gray-200 rounded-xl w-1/3 mt-4"></div>
+                                </div>
+                            ))
+                        ) : error.companies ? (
+                            // Show error message
+                            <div className="col-span-1 md:col-span-2 lg:col-span-3 p-8 text-center">
+                                <div className="text-red-500 text-lg mb-4">{error.companies}</div>
+                                <button 
+                                    onClick={() => window.location.reload()} 
+                                    className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
+                                >
+                                    Thử lại
+                                </button>
+                            </div>
+                        ) : companies.length > 0 ? (
+                            // Show companies from API
+                            companies.map((company, index) => (
+                                <CompanyCard key={company.id || index} company={company} />
+                            ))
+                        ) : (
+                            // No companies found
+                            <div className="col-span-1 md:col-span-2 lg:col-span-3 p-8 text-center">
+                                <p className="text-gray-500 text-lg">Không tìm thấy công ty nào.</p>
+                            </div>
+                        )}
                     </div>
 
                     {/* Modern Pagination */}

@@ -6,6 +6,33 @@ const JobCard = ({ job }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isFavorited, setIsFavorited] = useState(false);
     const navigate = useNavigate();
+    
+    const formatSalary = (salary) => {
+        if (!salary) return "Thương lượng";
+        
+        // If salary is just a string (legacy data)
+        if (typeof salary === 'string') return salary;
+        
+        // Format based on available properties
+        let formattedSalary = '';
+        
+        if (salary.min && salary.max) {
+            formattedSalary = `${salary.min.toLocaleString()} - ${salary.max.toLocaleString()}`;
+        } else if (salary.min) {
+            formattedSalary = `Từ ${salary.min.toLocaleString()}`;
+        } else if (salary.max) {
+            formattedSalary = `Đến ${salary.max.toLocaleString()}`;
+        } else {
+            return "Thương lượng";
+        }
+        
+        // Add currency if available
+        if (salary.currency) {
+            formattedSalary += ` ${salary.currency}`;
+        }
+        
+        return formattedSalary;
+    };
 
     const handleApplyClick = (e) => {
         e.preventDefault();
@@ -16,7 +43,7 @@ const JobCard = ({ job }) => {
         
         if (!token) {
             // If not logged in, redirect to login page
-            alert("Please log in to apply for this job");
+            alert("Vui lòng đăng nhập để ứng tuyển cho công việc này");
             // Add the current location to localStorage to redirect back after login
             localStorage.setItem('redirectAfterLogin', `/job/${job?._id || job?.id || 1}`);
             navigate('/login');
@@ -99,12 +126,10 @@ const JobCard = ({ job }) => {
                                 />
                             </svg>
                             <span className="truncate">{job?.company || "CÔNG TY TNHH PLASMA"}</span>
-                        </p>
-
-                        {/* Tags */}
+                        </p>                        {/* Tags */}
                         <div className="flex flex-col gap-2 mb-6">
                             <span className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-3 py-2 rounded-2xl text-sm font-semibold shadow-md text-center">
-                                💰 {job?.salary || "10 - 15 triệu"}
+                                💰 {formatSalary(job?.salary) || "10 - 15 triệu"}
                             </span>
                             <span className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-3 py-2 rounded-2xl text-sm font-semibold shadow-md text-center">
                                 📍 {job?.location || "Hồ Chí Minh"}

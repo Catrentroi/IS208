@@ -6,7 +6,7 @@ const Breadcrumb = ({ items }) => {
             <div className="container mx-auto px-6">
                 <ol className="flex items-center space-x-2 text-black">
                     {items.map((item, index) => (
-                        <li key={index} className="flex items-center">
+                        <li key={item.label || `breadcrumb-item-${index}`} className="flex items-center">
                             {index > 0 && <span className="mx-2 text-black font-bold text-xl"> &gt; </span>}
                             {item.href ? (
                                 <a

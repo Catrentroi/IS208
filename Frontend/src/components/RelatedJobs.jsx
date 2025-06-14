@@ -6,6 +6,33 @@ const RelatedJobs = ({ jobs, onJobClick }) => {
     const [selectedJob, setSelectedJob] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     
+    const formatSalary = (salary) => {
+        if (!salary) return "Thương lượng";
+        
+        // If salary is just a string (legacy data)
+        if (typeof salary === 'string') return salary;
+        
+        // Format based on available properties
+        let formattedSalary = '';
+        
+        if (salary.min && salary.max) {
+            formattedSalary = `${salary.min.toLocaleString()} - ${salary.max.toLocaleString()}`;
+        } else if (salary.min) {
+            formattedSalary = `Từ ${salary.min.toLocaleString()}`;
+        } else if (salary.max) {
+            formattedSalary = `Đến ${salary.max.toLocaleString()}`;
+        } else {
+            return "Thương lượng";
+        }
+        
+        // Add currency if available
+        if (salary.currency) {
+            formattedSalary += ` ${salary.currency}`;
+        }
+        
+        return formattedSalary;
+    };
+    
     const handleApplyClick = (job) => {
         setSelectedJob(job);
         setIsModalOpen(true);
@@ -66,9 +93,7 @@ const RelatedJobs = ({ jobs, onJobClick }) => {
                                 <div className="flex flex-wrap gap-2 mb-4">
                                     {job.salary && (
                                         <span className="bg-gray-800 text-white px-3 py-1 rounded-full text-xs font-bold">
-                                            {typeof job.salary === 'object' ? 
-                                                `${job.salary.min || ''} - ${job.salary.max || ''} ${job.salary.currency || ''}` : 
-                                                job.salary}
+                                            {formatSalary(job.salary)}
                                         </span>
                                     )}
                                     {job.location && (

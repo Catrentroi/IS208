@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import SearchSection from "../components/SearchSection";
 import Breadcrumb from "../components/Breadcrumb";
@@ -6,134 +7,167 @@ import FilterSection from "../components/FilterSection";
 import JobResultCard from "../components/JobResultCard";
 import Pagination from "../components/Pagination";
 import Footer from "../components/Footer";
+import { jobService } from "../api";
 
 const SearchPage = () => {
+    const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
+    
+    // Initialize search state from URL parameters
     const [searchQuery, setSearchQuery] = useState({
-        jobTitle: "Nhân viên Marketing",
-        company: "",
-        location: "Thành phố Hồ Chí Minh",
+        title: searchParams.get('title') || "",
+        company: searchParams.get('company') || "",
+        location: searchParams.get('location') || ""
     });
 
     const [filters, setFilters] = useState({
-        experience: "all",
-        level: "all",
-        workType: "all",
-        salary: "all",
-        salaryRange: { from: "", to: "" },
+        experience: searchParams.get('experience') || "all",
+        jobType: searchParams.get('jobType') || "all",
+        level: searchParams.get('level') || "all",
+        salary: searchParams.get('salary') || "all",
+        salaryRange: { 
+            from: searchParams.get('salaryFrom') || "", 
+            to: searchParams.get('salaryTo') || "" 
+        },
     });
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages] = useState(10);
-    const [jobs, setJobs] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-
-    // Mock data cho kết quả tìm kiếm
-    const mockJobs = [
-        {
-            id: 1,
-            title: "Nhân Viên Marketing (Mảng Thú Y/Thủy Sản)",
-            company: "CÔNG TY TNHH PLASMA",
-            salary: "10 - 15 triệu",
-            experience: "3 năm",
-            location: "Hồ Chí Minh",
-        },
-        {
-            id: 2,
-            title: "Chuyên Viên Marketing Digital",
-            company: "CÔNG TY CỔ PHẦN VINCOM RETAIL",
-            salary: "15 - 20 triệu",
-            experience: "2 năm",
-            location: "Hồ Chí Minh",
-        },
-        {
-            id: 3,
-            title: "Trưởng Phòng Marketing",
-            company: "CÔNG TY TNHH SAMSUNG VIETNAM",
-            salary: "25 - 30 triệu",
-            experience: "5 năm",
-            location: "Hồ Chí Minh",
-        },
-        {
-            id: 4,
-            title: "Marketing Executive",
-            company: "UNILEVER VIETNAM",
-            salary: "12 - 18 triệu",
-            experience: "1 năm",
-            location: "Hồ Chí Minh",
-        },
-        {
-            id: 5,
-            title: "Content Marketing Specialist",
-            company: "SHOPEE VIETNAM",
-            salary: "18 - 25 triệu",
-            experience: "3 năm",
-            location: "Hồ Chí Minh",
-        },
-        {
-            id: 6,
-            title: "Marketing Manager",
-            company: "GRAB VIETNAM",
-            salary: "30 - 40 triệu",
-            experience: "4 năm",
-            location: "Hồ Chí Minh",
-        },
-    ];
-
-    // Breadcrumb items
+    const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page')) || 1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [jobs, setJobs] = useState([]);    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [totalJobs, setTotalJobs] = useState(0);    // Generate breadcrumb items based on search query
     const breadcrumbItems = [
         { label: "Trang chủ", href: "/" },
         { label: "Việc làm", href: "/jobs" },
-        { label: "Nhân viên marketing" },
+        ...(searchQuery.title ? [{ label: searchQuery.title }] : [])
     ];
 
-    // Simulate search with loading
-    const performSearch = async (newQuery, newFilters) => {
+    // Perform search with API
+    const performSearch = async (newQuery, newFilters, page = 1) => {
         setIsLoading(true);
-
-        // Simulate API call
-        setTimeout(() => {
-            // Filter jobs based on search criteria
-            let filteredJobs = mockJobs;
-
-            if (newQuery?.jobTitle) {
-                filteredJobs = filteredJobs.filter((job) =>
-                    job.title.toLowerCase().includes(newQuery.jobTitle.toLowerCase())
-                );
+        setError(null);
+        
+        try {
+            // Build API filters
+            const apiFilters = {
+                page: page,
+                limit: 10 // Items per page
+            };
+            
+            // Add search query params
+            if (newQuery.title) apiFilters.title = newQuery.title;
+            if (newQuery.company) apiFilters.company = newQuery.company;
+            if (newQuery.location) apiFilters.location = newQuery.location;
+            
+            // Add filters
+            if (newFilters.experience && newFilters.experience !== 'all') {
+                apiFilters.experience = newFilters.experience;
             }
-
-            if (newQuery?.company) {
-                filteredJobs = filteredJobs.filter((job) =>
-                    job.company.toLowerCase().includes(newQuery.company.toLowerCase())
-                );
+            
+            if (newFilters.jobType && newFilters.jobType !== 'all') {
+                apiFilters.jobType = newFilters.jobType;
             }
-
-            setJobs(filteredJobs);
+            
+            if (newFilters.level && newFilters.level !== 'all') {
+                apiFilters.level = newFilters.level;
+            }
+            
+            // Handle salary range
+            if (newFilters.salary === 'custom' && (newFilters.salaryRange.from || newFilters.salaryRange.to)) {
+                if (newFilters.salaryRange.from) apiFilters.minSalary = newFilters.salaryRange.from;
+                if (newFilters.salaryRange.to) apiFilters.maxSalary = newFilters.salaryRange.to;
+            } else if (newFilters.salary && newFilters.salary !== 'all') {
+                // Handle predefined salary ranges
+                switch (newFilters.salary) {
+                    case 'under10':
+                        apiFilters.maxSalary = 10000000;
+                        break;
+                    case '10to20':
+                        apiFilters.minSalary = 10000000;
+                        apiFilters.maxSalary = 20000000;
+                        break;
+                    case '20to30':
+                        apiFilters.minSalary = 20000000;
+                        apiFilters.maxSalary = 30000000;
+                        break;
+                    case 'over30':
+                        apiFilters.minSalary = 30000000;
+                        break;
+                }
+            }
+            
+            console.log('Searching jobs with filters:', apiFilters);
+            
+            // Call API
+            const response = await jobService.getAllJobs(apiFilters);
+            
+            console.log('Search API response:', response);
+            
+            if (response && response.data) {
+                setJobs(response.data);
+                setTotalJobs(response.totalCount || response.data.length);
+                setTotalPages(response.totalPages || Math.ceil(response.totalCount / 10) || 1);
+            } else {
+                setJobs([]);
+                setTotalJobs(0);
+                setTotalPages(1);
+            }
+            
+            // Update URL with search parameters
+            const queryParams = new URLSearchParams();
+            if (newQuery.title) queryParams.set('title', newQuery.title);
+            if (newQuery.company) queryParams.set('company', newQuery.company);
+            if (newQuery.location) queryParams.set('location', newQuery.location);
+            if (newFilters.experience !== 'all') queryParams.set('experience', newFilters.experience);
+            if (newFilters.jobType !== 'all') queryParams.set('jobType', newFilters.jobType);
+            if (newFilters.level !== 'all') queryParams.set('level', newFilters.level);
+            if (newFilters.salary !== 'all') queryParams.set('salary', newFilters.salary);
+            if (page > 1) queryParams.set('page', page.toString());
+            
+            navigate({ search: queryParams.toString() });
+        } catch (err) {
+            console.error('Error searching jobs:', err);
+            setError('Failed to load jobs. Please try again.');
+            setJobs([]);
+            setTotalJobs(0);
+            setTotalPages(1);
+        } finally {
             setIsLoading(false);
-        }, 1000);
-    };
-
-    // Handle search from SearchSection
+        }
+    };    // Handle search form submit
     const handleSearch = (newSearchQuery) => {
         setSearchQuery(newSearchQuery);
         setCurrentPage(1);
-        performSearch(newSearchQuery, filters);
+        performSearch(newSearchQuery, filters, 1);
     };
 
     // Handle filter changes
     const handleFilterChange = (newFilters) => {
         setFilters(newFilters);
         setCurrentPage(1);
-        performSearch(searchQuery, newFilters);
+        performSearch(searchQuery, newFilters, 1);
     };
 
     // Handle job application
     const handleApply = (job) => {
-        console.log("Applying for job:", job);
-        alert(`Đang ứng tuyển vào vị trí: ${job.title}`);
+        // Check if user is logged in
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+            alert("Vui lòng đăng nhập để ứng tuyển");
+            // Save the job to redirect back after login
+            localStorage.setItem('redirectAfterLogin', `/job/${job._id || job.id}`);
+            navigate('/login');
+            return;
+        }
+        
+        // Navigate to job detail page for application
+        navigate(`/job/${job._id || job.id}`);
     };
 
     // Handle favorite job
     const handleFavorite = (job) => {
+        // This would need a backend implementation for saved jobs
         console.log("Adding to favorites:", job);
         alert(`Đã thêm "${job.title}" vào danh sách yêu thích`);
     };
@@ -141,12 +175,13 @@ const SearchPage = () => {
     // Handle page change
     const handlePageChange = (page) => {
         setCurrentPage(page);
+        performSearch(searchQuery, filters, page);
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
     // Initial search on component mount
     useEffect(() => {
-        performSearch(searchQuery, filters);
+        performSearch(searchQuery, filters, currentPage);
     }, []);
 
     return (
@@ -250,7 +285,7 @@ const SearchPage = () => {
                                 <div className="space-y-6 mb-8">
                                     {jobs.map((job) => (
                                         <JobResultCard
-                                            key={job.id}
+                                            key={job._id || job.id}
                                             job={job}
                                             onApply={() => handleApply(job)}
                                             onFavorite={() => handleFavorite(job)}

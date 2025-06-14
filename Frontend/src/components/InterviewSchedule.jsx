@@ -1,74 +1,93 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { interviewService } from "../api";
 
 const InterviewSchedule = ({ interviews = [] }) => {
     const [filter, setFilter] = useState("all");
+    const [userInterviews, setUserInterviews] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    // Mock data if no interviews provided
-    const mockInterviews = [
-        {
-            id: 1,
-            position: "Nhân viên Marketing",
-            company: "Công ty TNHH Plasma",
-            datetime: "10 giờ 00 phút - 30/5/2025",
-            format: "Trực tiếp",
-            status: "Đã lên lịch",
-            note: "Mang theo CV và bằng cấp",
-            location: "Tầng 5, Tòa nhà ABC, Quận 1, TP.HCM",
-            interviewer: "Ms. Lan - Phòng Nhân sự",
-        },
-        {
-            id: 2,
-            position: "Developer Frontend",
-            company: "Công ty TNHH TechViet",
-            datetime: "14 giờ 30 phút - 28/5/2025",
-            format: "Trực tuyến",
-            status: "Đang phỏng vấn",
-            note: "Phỏng vấn kỹ thuật với team dev",
-            meetingLink: "https://meet.google.com/abc-defg-hij",
-            interviewer: "Mr. Dũng - Technical Lead",
-        },
-        {
-            id: 3,
-            position: "UI/UX Designer",
-            company: "Công ty TNHH Creative",
-            datetime: "09 giờ 00 phút - 25/5/2025",
-            format: "Trực tuyến",
-            status: "Đã hoàn thành",
-            note: "Đã hoàn thành vòng 1",
-            interviewer: "Ms. Hương - Design Team",
-        },
-    ];
+    useEffect(() => {
+        // Use the provided interviews prop if available, otherwise fetch from API
+        if (interviews.length > 0) {
+            setUserInterviews(interviews);
+            setLoading(false);
+        } else {
+            fetchInterviews();
+        }
+    }, [interviews]);
 
-    const displayInterviews = interviews.length > 0 ? interviews : mockInterviews;
-
-    const getStatusBadge = (status) => {
-        const badges = {
-            "Đã lên lịch": {
-                bg: "bg-yellow-200",
-                text: "text-black",
-                label: "Đã lên lịch",
-            },
-            "Đang phỏng vấn": {
-                bg: "bg-blue-200",
-                text: "text-black",
-                label: "Đang phỏng vấn",
-            },
-            "Đã hoàn thành": {
-                bg: "bg-green-200",
-                text: "text-black",
-                label: "Đã hoàn thành",
-            },
-        };
-
-        const badge = badges[status] || badges["Đã lên lịch"];
-
-        return (
-            <div className={`${badge.bg} ${badge.text} px-4 py-2 rounded-full text-sm font-bold inline-block`}>
-                {badge.label}
-            </div>
-        );
+    const fetchInterviews = async () => {
+        try {
+            setLoading(true);
+            const response = await interviewService.getMyInterviews();
+            setUserInterviews(response.interviews || []);
+            setError(null);
+        } catch (err) {
+            console.error("Error fetching interviews:", err);
+            setError("Failed to load interview schedule. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+    // Format date and time from API (assumes ISO format)
+    const formatDateTime = (dateString) => {
+        if (!dateString) return "";
+        const date = new Date(dateString);
+        return date.toLocaleDateString("vi-VN", {
+            hour: "2-digit",
+            minute: "2-digit",
+            day: "2-digit",
+            month: "numeric",
+            year: "numeric",
+        }).replace(",", " -");
     };
 
+    // Show loading state
+    if (loading) {
+        return (
+            <div className="bg-white border border-gray-300 rounded-3xl p-8 w-full">
+                <div className="mb-8">
+                    <div className="h-8 bg-gray-200 rounded w-1/3 animate-pulse"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/2 mt-2 animate-pulse"></div>
+                </div>
+                <div className="space-y-4">
+                    {[1, 2, 3].map((item) => (
+                        <div key={item} className="bg-gray-100 p-6 rounded-lg animate-pulse">
+                            <div className="h-6 bg-gray-200 rounded w-3/4 mb-3"></div>
+                            <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
+                            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+    
+    // Show error state
+    if (error) {
+        return (
+            <div className="bg-white border border-gray-300 rounded-3xl p-8 w-full text-center">
+                <div className="text-red-500 mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">Không thể tải lịch phỏng vấn</h2>
+                <p className="text-lg text-gray-600 mb-4">{error}</p>
+                <button 
+                    onClick={fetchInterviews}
+                    className="px-6 py-2 bg-green-800 text-white rounded-lg hover:bg-green-700 font-semibold"
+                >
+                    Thử lại
+                </button>
+            </div>
+        );
+    }
+
+    const displayInterviews = userInterviews;
+    
     const filteredInterviews =
         filter === "all" ? displayInterviews : displayInterviews.filter((interview) => interview.status === filter);
 
@@ -95,7 +114,7 @@ const InterviewSchedule = ({ interviews = [] }) => {
         if (interview.format === "Trực tuyến") {
             window.open(interview.meetingLink || "#", "_blank");
         } else {
-            alert(`Địa điểm phỏng vấn: ${interview.location}`);
+            alert(`Địa điểm phỏng vấn: ${interview.location || "Không có thông tin"}`);
         }
     };
 
@@ -126,164 +145,176 @@ const InterviewSchedule = ({ interviews = [] }) => {
                 </div>
             </div>
 
-            {/* Interviews List */}
-            <div className="space-y-4">
-                {filteredInterviews.length === 0 ? (
-                    <div className="text-center py-12">
-                        <div className="text-gray-400 text-6xl mb-4">📅</div>
-                        <h3 className="text-xl font-bold text-gray-600 mb-2">
-                            {filter === "all"
-                                ? "Chưa có lịch phỏng vấn nào"
-                                : `Không có lịch phỏng vấn "${filterOptions.find((f) => f.value === filter)?.label}"`}
-                        </h3>
-                        <p className="text-gray-500">
-                            {filter === "all"
-                                ? "Các lịch phỏng vấn sẽ xuất hiện ở đây khi bạn được mời phỏng vấn"
-                                : "Thử chuyển sang tab khác để xem các lịch phỏng vấn"}
-                        </p>
-                    </div>
-                ) : (
-                    filteredInterviews.map((interview) => (
-                        <div key={interview.id} className="bg-white border border-gray-300 rounded-3xl p-6 mb-4">
-                            <div className="grid grid-cols-3 gap-8">
-                                {/* Position & Company Info */}
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="text-green-800 text-lg font-bold block mb-1">Vị trí:</label>
-                                        <span className="text-black text-lg font-semibold">{interview.position}</span>
-                                    </div>
-
-                                    <div>
-                                        <label className="text-green-800 text-lg font-bold block mb-1">
-                                            Doanh nghiệp:
-                                        </label>
-                                        <span className="text-black text-lg font-semibold">{interview.company}</span>
-                                    </div>
-
-                                    <div>
-                                        <label className="text-green-800 text-lg font-bold block mb-1">
-                                            Lịch phỏng vấn:
-                                        </label>
-                                        <span className="text-black text-lg font-semibold">{interview.datetime}</span>
-                                    </div>
-                                </div>
-
-                                {/* Format & Status */}
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="text-green-800 text-lg font-bold block mb-1">
-                                            Hình thức:
-                                        </label>
-                                        <span className="text-black text-lg font-semibold">{interview.format}</span>
-                                    </div>
-
-                                    <div>
-                                        <label className="text-green-800 text-lg font-bold block mb-1">
-                                            Trạng thái:
-                                        </label>
-                                        {getStatusBadge(interview.status)}
-                                    </div>
-
-                                    <div>
-                                        <label className="text-green-800 text-lg font-bold block mb-1">
-                                            Người phỏng vấn:
-                                        </label>
-                                        <span className="text-black text-lg font-semibold">
-                                            {interview.interviewer}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {/* Notes & Actions */}
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="text-green-800 text-lg font-bold block mb-1">Ghi chú:</label>
-                                        <span className="text-black text-lg font-semibold">{interview.note}</span>
-                                    </div>
-
-                                    {interview.status === "Đã lên lịch" && (
-                                        <div className="mt-4">
-                                            <button
-                                                onClick={() => handleJoinInterview(interview)}
-                                                className="bg-green-800 text-white px-6 py-3 rounded-lg font-bold text-lg hover:bg-green-900 transition-colors"
-                                            >
-                                                {interview.format === "Trực tuyến"
-                                                    ? "Tham gia phỏng vấn"
-                                                    : "Xem địa điểm"}
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Additional Info */}
-                            {interview.status === "Đã lên lịch" && (
-                                <div className="mt-6">
-                                    {interview.format === "Trực tuyến" ? (
-                                        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                                            <h4 className="text-blue-800 font-bold mb-2">
-                                                📹 Hướng dẫn phỏng vấn trực tuyến:
-                                            </h4>
-                                            <ul className="text-blue-700 text-sm space-y-1">
-                                                <li>• Kiểm tra kết nối internet ổn định trước 15 phút</li>
-                                                <li>• Chuẩn bị camera và micro hoạt động tốt</li>
-                                                <li>• Chọn không gian yên tĩnh, ánh sáng đầy đủ</li>
-                                                <li>• Tham gia phòng họp trước 5-10 phút</li>
-                                            </ul>
-                                        </div>
-                                    ) : (
-                                        <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                                            <h4 className="text-green-800 font-bold mb-2">
-                                                🏢 Thông tin phỏng vấn trực tiếp:
-                                            </h4>
-                                            <div className="text-green-700 text-sm space-y-1">
-                                                <p>
-                                                    <strong>Địa chỉ:</strong> {interview.location}
-                                                </p>
-                                                <p>
-                                                    <strong>Lưu ý:</strong> Vui lòng có mặt trước 15 phút và mang theo
-                                                    CV bản cứng
-                                                </p>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-                    ))
-                )}
-            </div>
-
-            {/* Quick Stats */}
-            {displayInterviews.length > 0 && (
-                <div className="mt-8 p-6 bg-gray-50 rounded-xl">
-                    <h4 className="text-lg font-bold text-gray-800 mb-4">📊 Thống kê phỏng vấn</h4>
-                    <div className="grid grid-cols-4 gap-4 text-center">
-                        <div className="bg-white p-4 rounded-lg">
-                            <div className="text-2xl font-bold text-blue-600">{displayInterviews.length}</div>
-                            <div className="text-sm text-gray-600">Tổng lịch hẹn</div>
-                        </div>
-                        <div className="bg-white p-4 rounded-lg">
-                            <div className="text-2xl font-bold text-yellow-600">
-                                {displayInterviews.filter((i) => i.status === "Đã lên lịch").length}
-                            </div>
-                            <div className="text-sm text-gray-600">Sắp tới</div>
-                        </div>
-                        <div className="bg-white p-4 rounded-lg">
-                            <div className="text-2xl font-bold text-green-600">
-                                {displayInterviews.filter((i) => i.status === "Đã hoàn thành").length}
-                            </div>
-                            <div className="text-sm text-gray-600">Hoàn thành</div>
-                        </div>
-                        <div className="bg-white p-4 rounded-lg">
-                            <div className="text-2xl font-bold text-purple-600">
-                                {displayInterviews.filter((i) => i.format === "Trực tuyến").length}
-                            </div>
-                            <div className="text-sm text-gray-600">Trực tuyến</div>
-                        </div>
-                    </div>
+            {/* Empty state */}
+            {displayInterviews.length === 0 && (
+                <div className="text-center py-10">
+                    <div className="text-gray-400 text-5xl mb-4">🗓️</div>
+                    <h3 className="text-xl font-bold text-gray-700 mb-2">Không có lịch phỏng vấn</h3>
+                    <p className="text-gray-500">Bạn chưa có lịch phỏng vấn nào được đặt</p>
                 </div>
             )}
+
+            {/* No results for filter */}
+            {displayInterviews.length > 0 && filteredInterviews.length === 0 && (
+                <div className="text-center py-10">
+                    <div className="text-gray-400 text-5xl mb-4">🔍</div>
+                    <h3 className="text-xl font-bold text-gray-700 mb-2">Không tìm thấy kết quả</h3>
+                    <p className="text-gray-500">Không có lịch phỏng vấn nào phù hợp với bộ lọc</p>
+                </div>
+            )}
+
+            {/* Interview Cards */}
+            {filteredInterviews.length > 0 && (
+                <div className="space-y-6">
+                    {filteredInterviews.map((interview) => (
+                        <div key={interview._id} className="border border-gray-200 rounded-xl overflow-hidden">
+                            <div className="p-6">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 className="text-xl font-bold text-gray-800">{interview.job?.title || "Không có tiêu đề"}</h3>
+                                        <p className="text-gray-600">{interview.job?.company?.name || "Không có tên công ty"}</p>
+                                    </div>
+                                    <div
+                                        className={`px-4 py-2 rounded-full text-sm font-bold ${
+                                            interview.status === "Đã hoàn thành"
+                                                ? "bg-green-200 text-green-800"
+                                                : interview.status === "Đang phỏng vấn"
+                                                ? "bg-blue-200 text-blue-800"
+                                                : "bg-yellow-200 text-yellow-800"
+                                        }`}
+                                    >
+                                        {interview.status || "Chưa có trạng thái"}
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-6 mb-4">
+                                    <div>
+                                        <div className="flex items-center mb-2">
+                                            <svg
+                                                className="w-5 h-5 mr-2 text-gray-600"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth="2"
+                                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                                />
+                                            </svg>
+                                            <span className="font-semibold text-gray-700">Thời gian:</span>
+                                        </div>
+                                        <p className="pl-7 text-gray-600">{formatDateTime(interview.scheduledTime)}</p>
+                                    </div>
+
+                                    <div>
+                                        <div className="flex items-center mb-2">
+                                            <svg
+                                                className="w-5 h-5 mr-2 text-gray-600"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth="2"
+                                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                                                />
+                                            </svg>
+                                            <span className="font-semibold text-gray-700">Người phỏng vấn:</span>
+                                        </div>
+                                        <p className="pl-7 text-gray-600">
+                                            {interview.interviewers?.map(i => i.name).join(', ') || "Chưa có thông tin"}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-6 mb-4">
+                                    <div>
+                                        <div className="flex items-center mb-2">
+                                            <svg
+                                                className="w-5 h-5 mr-2 text-gray-600"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth="2"
+                                                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                                                />
+                                            </svg>
+                                            <span className="font-semibold text-gray-700">
+                                                {interview.format === "Trực tuyến" ? "Link phỏng vấn:" : "Địa điểm:"}
+                                            </span>
+                                        </div>
+                                        <p className="pl-7 text-gray-600">
+                                            {interview.format === "Trực tuyến"
+                                                ? interview.meetingLink || "Chưa có thông tin"
+                                                : interview.location || "Chưa có thông tin"}
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <div className="flex items-center mb-2">
+                                            <svg
+                                                className="w-5 h-5 mr-2 text-gray-600"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth="2"
+                                                    d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
+                                                />
+                                            </svg>
+                                            <span className="font-semibold text-gray-700">Ghi chú:</span>
+                                        </div>
+                                        <p className="pl-7 text-gray-600">{interview.notes || "Không có ghi chú"}</p>
+                                    </div>
+                                </div>
+
+                                {/* Actions */}
+                                <div className="mt-6 flex space-x-3">
+                                    <button
+                                        onClick={() => handleJoinInterview(interview)}
+                                        className={`px-6 py-2 rounded font-semibold text-white ${
+                                            interview.format === "Trực tuyến"
+                                                ? "bg-blue-600 hover:bg-blue-700"
+                                                : "bg-green-600 hover:bg-green-700"
+                                        }`}
+                                    >
+                                        {interview.format === "Trực tuyến" ? "Tham gia phỏng vấn" : "Xem địa điểm"}
+                                    </button>
+                                    <button className="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded">
+                                        Xem chi tiết
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {/* Calendar View Button */}
+            <div className="mt-8 text-center">
+                <button className="px-8 py-3 bg-green-100 text-green-800 font-semibold rounded-lg hover:bg-green-200 inline-flex items-center">
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                    </svg>
+                    Xem lịch theo tháng
+                </button>
+            </div>
         </div>
     );
 };

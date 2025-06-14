@@ -5,6 +5,33 @@ import JobApplicationModal from "./JobApplicationModal";
 const JobResultCard = ({ job, onApply, onFavorite }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    const formatSalary = (salary) => {
+        if (!salary) return "Thương lượng";
+
+        // If salary is just a string (legacy data)
+        if (typeof salary === "string") return salary;
+
+        // Format based on available properties
+        let formattedSalary = "";
+
+        if (salary.min && salary.max) {
+            formattedSalary = `${salary.min.toLocaleString()} - ${salary.max.toLocaleString()}`;
+        } else if (salary.min) {
+            formattedSalary = `Từ ${salary.min.toLocaleString()}`;
+        } else if (salary.max) {
+            formattedSalary = `Đến ${salary.max.toLocaleString()}`;
+        } else {
+            return "Thương lượng";
+        }
+
+        // Add currency if available
+        if (salary.currency) {
+            formattedSalary += ` ${salary.currency}`;
+        }
+
+        return formattedSalary;
+    };
+
     const handleApplyClick = (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -56,7 +83,7 @@ const JobResultCard = ({ job, onApply, onFavorite }) => {
                                         strokeLinejoin="round"
                                     />
                                 </svg>
-                                {job?.salary || "10 - 15 triệu"}
+                                {formatSalary(job?.salary) || "10 - 15 triệu"}
                             </span>
                         </div>
 
