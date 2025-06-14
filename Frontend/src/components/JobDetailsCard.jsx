@@ -1,47 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState } from "react";
 import JobApplicationModal from "./JobApplicationModal";
-import { jobService, applicationService } from "../api";
+import { applicationService } from "../api";
 
-const JobDetailsCard = ({ onApply, onFavorite }) => {
-    const [job, setJob] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+const JobDetailsCard = ({ job, onApply }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const { id } = useParams();
-
-    useEffect(() => {
-        const fetchJobDetails = async () => {
-            try {
-                console.log("Fetching job details for ID:", id);
-                const response = await jobService.getJobById(id);
-                console.log("Job API response:", response); // Add logging
-                
-                // Extract job data from the correct response structure
-                if (response && response.success === true && response.data) {
-                    console.log("Setting job data:", response.data);
-                    setJob(response.data);
-                } else if (response && response.data) {
-                    // Some APIs might just return the data directly
-                    console.log("Setting job data directly:", response.data);
-                    setJob(response.data);
-                } else {
-                    console.error("Invalid response structure:", response);
-                    throw new Error("Invalid response structure");
-                }
-                
-                setLoading(false);
-            } catch (err) {
-                console.error("Error fetching job details:", err);
-                setError("Failed to load job details. Please try again later.");
-                setLoading(false);
-            }
-        };
-
-        if (id) {
-            fetchJobDetails();
-        }
-    }, [id]);
 
     const handleApplyClick = () => {
         // Check if user is logged in by checking for token
@@ -62,17 +24,20 @@ const JobDetailsCard = ({ onApply, onFavorite }) => {
 
     const handleSubmitApplication = async (applicationData) => {
         try {
-            await applicationService.createApplication(id, applicationData);
+            await applicationService.createApplication(job._id, applicationData);
             setIsModalOpen(false);
             // Show success notification
             alert("Application submitted successfully!");
+            if (onApply) {
+                onApply(applicationData);
+            }
         } catch (err) {
             console.error("Error submitting application:", err);
             // Show error notification
             alert("Failed to submit application. Please try again.");
         }
-    };    if (loading) return <div className="text-center p-8">Loading job details...</div>;
-    if (error) return <div className="text-red-500 p-8">{error}</div>;
+    };
+    
     if (!job) return <div className="text-center p-8">Job not found</div>;
     
     // Format salary for display
@@ -173,7 +138,6 @@ const JobDetailsCard = ({ onApply, onFavorite }) => {
                             Ứng tuyển ngay
                         </button>
                         <button
-                            onClick={() => onFavorite?.(job)}
                             className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center hover:bg-gray-300 transition-colors"
                         >
                             <div className="w-8 h-8 bg-gray-400 rounded"></div>

@@ -67,7 +67,23 @@ export const AuthProvider = ({ children }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    console.warn('useAuth was called outside of AuthProvider. Using fallback values.');
+    // Return fallback values to avoid breaking the UI
+    return {
+      user: null,
+      isLoading: false,
+      login: () => {
+        console.warn('AuthProvider not found during login attempt');
+        return Promise.reject(new Error('AuthProvider not found'));
+      },
+      logout: () => console.warn('AuthProvider not found during logout attempt'),
+      register: () => {
+        console.warn('AuthProvider not found during registration attempt');
+        return Promise.reject(new Error('AuthProvider not found'));
+      },
+      updateUserProfile: () => console.warn('AuthProvider not found during profile update attempt'),
+      isAuthenticated: false
+    };
   }
   return context;
 };

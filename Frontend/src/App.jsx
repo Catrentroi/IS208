@@ -1,9 +1,11 @@
 import React, { Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
 import Homepage from "./pages/Homepage";
 import SearchPage from "./pages/SearchPage";
 import JobDetailPage from "./pages/JobDetailPage";
 import ProfilePage from "./pages/ProfilePage";
+import LoginPage from "./pages/LoginPage";
 import "./index.css";
 
 // Lazy load components for better performance
@@ -32,26 +34,29 @@ const LoadingSpinner = () => (
 
 function App() {
     return (
-        <Router>
-            <div className="App">
-                <Suspense fallback={<LoadingSpinner />}>
-                    <Routes>
-                        <Route path="/" element={<Homepage />} />
-                        <Route path="/search" element={<SearchPage />} />
-                        <Route path="/jobs" element={<SearchPage />} />
-                        <Route path="/job/:id" element={<JobDetailPage />} />
-                        <Route path="/profile" element={<ProfilePage />} />
-                        <Route path="/profile/*" element={<ProfilePage />} />
-                        <Route path="/hr/dashboard" element={<HRMainDashboard />} />
-                        <Route path="/hr/job-management" element={<HRDashboard />} />
-                        <Route path="/hr/interview-management" element={<HRInterviewManagement />} />
-                        <Route path="/hr/candidate-management" element={<HRCandidateManagement />} />
-                        <Route path="/hr/test-management" element={<HRTestManagement />} />
-                        <Route path="/hr/account" element={<HRAccountPage />} />
-                    </Routes>
-                </Suspense>
-            </div>
-        </Router>
+        <AuthProvider>
+            <Router>
+                <div className="App">
+                    <Suspense fallback={<LoadingSpinner />}>
+                        <Routes>
+                            <Route path="/" element={<Homepage />} />
+                            <Route path="/search" element={<SearchPage />} />
+                            <Route path="/jobs" element={<SearchPage />} />
+                            <Route path="/job/:id" element={<JobDetailPage />} />
+                            <Route path="/profile" element={<ProfilePage />} />
+                            <Route path="/profile/*" element={<ProfilePage />} />
+                            <Route path="/hr/dashboard" element={<HRMainDashboard />} />
+                            <Route path="/hr/job-management" element={<HRDashboard />} />
+                            <Route path="/hr/interview-management" element={<HRInterviewManagement />} />
+                            <Route path="/hr/candidate-management" element={<HRCandidateManagement />} />
+                            <Route path="/hr/test-management" element={<HRTestManagement />} />
+                            <Route path="/hr/account" element={<HRAccountPage />} />
+                            <Route path="/login" element={<LoginPage />} />
+                        </Routes>
+                    </Suspense>
+                </div>
+            </Router>
+        </AuthProvider>
     );
 }
 

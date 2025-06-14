@@ -3,7 +3,11 @@ import { useAuth } from "../contexts/AuthContext";
 import { candidateService } from "../api";
 
 const JobApplicationModal = ({ isOpen, onClose, job, onSubmit }) => {
-    const { user, isAuthenticated } = useAuth();
+    // Safe auth hook usage with fallback values
+    const auth = useAuth();
+    const user = auth?.user || null;
+    const isAuthenticated = auth?.isAuthenticated || false;
+    
     const [formData, setFormData] = useState({
         fullName: "",
         email: "",
@@ -22,14 +26,14 @@ const JobApplicationModal = ({ isOpen, onClose, job, onSubmit }) => {
                 try {
                     const candidateData = await candidateService.getMyProfile();
                     setFormData({
-                        fullName: candidateData.name || user.name || "",
-                        email: user.email || "",
-                        phone: candidateData.phone || "",
+                        fullName: candidateData?.name || user?.name || "",
+                        email: user?.email || "",
+                        phone: candidateData?.phone || "",
                         coverLetter: ""
                     });
                     
                     // Check if candidate already has a resume uploaded
-                    if (candidateData.resume) {
+                    if (candidateData?.resume) {
                         setResumeUploaded(true);
                     }
                 } catch (err) {
