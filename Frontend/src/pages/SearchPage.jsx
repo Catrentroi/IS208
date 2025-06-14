@@ -150,85 +150,158 @@ const SearchPage = () => {
     }, []);
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
             {/* Header */}
             <Header />
 
-            {/* Hero Image */}
-            <div className="h-48 bg-gradient-to-r from-blue-500 to-purple-600 relative overflow-hidden">
-                <div className="absolute inset-0 bg-black opacity-30"></div>
+            {/* Modern Hero Section */}
+            <div className="relative h-64 bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 overflow-hidden">
+                {/* Background Decoration */}
+                <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -mr-48 -mt-48"></div>
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full -ml-32 -mb-32"></div>
+
                 <div className="relative z-10 h-full flex items-center justify-center">
-                    <h1 className="text-white text-4xl font-bold">Tìm Kiếm Việc Làm</h1>
+                    <div className="text-center">
+                        <h1 className="text-white text-4xl lg:text-5xl font-bold mb-4">Tìm Kiếm Việc Làm</h1>
+                        <div className="w-24 h-1 bg-white/80 rounded-full mx-auto mb-4"></div>
+                        <p className="text-white/90 text-lg">Khám phá hàng nghìn cơ hội nghề nghiệp phù hợp với bạn</p>
+                    </div>
                 </div>
             </div>
 
             {/* Search Section */}
-            <div className="py-8">
+            <div className="py-8 bg-white/80 backdrop-blur-sm border-b border-gray-100">
                 <SearchSection initialData={searchQuery} onSearch={handleSearch} />
             </div>
 
             {/* Breadcrumb */}
-            <Breadcrumb items={breadcrumbItems} />
+            <div className="bg-white/60 backdrop-blur-sm border-b border-gray-100">
+                <Breadcrumb items={breadcrumbItems} />
+            </div>
 
             {/* Main Content */}
-            <div className="container mx-auto px-6 py-8">
+            <div className="container mx-auto px-6 py-12">
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                     {/* Filter Sidebar */}
                     <div className="lg:col-span-1">
-                        <FilterSection onFilterChange={handleFilterChange} />
+                        <div className="sticky top-8">
+                            <FilterSection onFilterChange={handleFilterChange} />
+                        </div>
                     </div>
 
                     {/* Results Section */}
                     <div className="lg:col-span-3">
                         {/* Results Header */}
-                        <div className="mb-8">
-                            <h2 className="text-green-800 font-bold text-3xl mb-4">
+                        <div className="mb-8 bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-gray-100">
+                            <h2 className="text-3xl lg:text-4xl font-bold text-transparent bg-gradient-to-r from-emerald-600 to-teal-700 bg-clip-text mb-4">
                                 Kết quả tìm kiếm - Công việc phù hợp với bạn
                             </h2>
-                            <p className="text-gray-600 text-lg">
-                                Tìm thấy {jobs.length} việc làm phù hợp với từ khóa "{searchQuery.jobTitle}"
-                            </p>
+                            <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full mb-4"></div>
+                            <div className="flex items-center gap-4 text-gray-600">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-lg flex items-center justify-center">
+                                        <svg
+                                            width="16"
+                                            height="16"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            className="text-emerald-600"
+                                        >
+                                            <path
+                                                d="M21 16V8C21 6.89543 20.1046 6 19 6H5C3.89543 6 3 6.89543 3 8V16C3 17.1046 3.89543 18 5 18H19C20.1046 18 21 17.1046 21 16Z"
+                                                stroke="currentColor"
+                                                strokeWidth="2"
+                                            />
+                                            <path d="M3 10H21" stroke="currentColor" strokeWidth="2" />
+                                        </svg>
+                                    </div>
+                                    <span className="text-lg font-semibold">
+                                        Tìm thấy <span className="text-emerald-600 font-bold">{jobs.length}</span> việc
+                                        làm
+                                    </span>
+                                </div>
+                                <div className="text-gray-400">•</div>
+                                <span className="text-lg">
+                                    phù hợp với từ khóa "
+                                    <span className="font-semibold text-gray-800">{searchQuery.jobTitle}</span>"
+                                </span>
+                            </div>
                         </div>
 
-                        {/* Loading State */}
+                        {/* Modern Loading State */}
                         {isLoading && (
-                            <div className="flex justify-center items-center py-12">
-                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-800"></div>
-                                <span className="ml-4 text-lg text-gray-600">Đang tìm kiếm...</span>
+                            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-12 shadow-lg border border-gray-100 mb-8">
+                                <div className="flex flex-col items-center justify-center">
+                                    <div className="relative mb-6">
+                                        <div className="w-16 h-16 border-4 border-gray-200 rounded-full animate-spin"></div>
+                                        <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
+                                    </div>
+                                    <h3 className="text-xl font-bold text-gray-800 mb-2">Đang tìm kiếm...</h3>
+                                    <p className="text-gray-600">
+                                        Chúng tôi đang tìm những công việc phù hợp nhất cho bạn
+                                    </p>
+                                </div>
                             </div>
                         )}
 
                         {/* Job Results */}
                         {!isLoading && (
                             <>
-                                {jobs.length > 0 ? (
-                                    <div className="space-y-6">
-                                        {jobs.map((job) => (
-                                            <JobResultCard
-                                                key={job.id}
-                                                job={job}
-                                                onApply={handleApply}
-                                                onFavorite={handleFavorite}
-                                            />
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <div className="text-center py-12">
-                                        <div className="text-gray-400 text-6xl mb-4">🔍</div>
-                                        <h3 className="text-xl font-bold text-gray-600 mb-2">
-                                            Không tìm thấy việc làm phù hợp
+                                <div className="space-y-6 mb-8">
+                                    {jobs.map((job) => (
+                                        <JobResultCard
+                                            key={job.id}
+                                            job={job}
+                                            onApply={() => handleApply(job)}
+                                            onFavorite={() => handleFavorite(job)}
+                                        />
+                                    ))}
+                                </div>
+
+                                {/* No Results State */}
+                                {jobs.length === 0 && (
+                                    <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-12 shadow-lg border border-gray-100 text-center">
+                                        <div className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                                            <svg
+                                                width="48"
+                                                height="48"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                className="text-gray-400"
+                                            >
+                                                <path
+                                                    d="M21 16V8C21 6.89543 20.1046 6 19 6H5C3.89543 6 3 6.89543 3 8V16C3 17.1046 3.89543 18 5 18H19C20.1046 18 21 17.1046 21 16Z"
+                                                    stroke="currentColor"
+                                                    strokeWidth="2"
+                                                />
+                                                <path d="M3 10H21" stroke="currentColor" strokeWidth="2" />
+                                            </svg>
+                                        </div>
+                                        <h3 className="text-2xl font-bold text-gray-800 mb-4">
+                                            Không tìm thấy kết quả phù hợp
                                         </h3>
-                                        <p className="text-gray-500">Hãy thử thay đổi từ khóa tìm kiếm hoặc bộ lọc</p>
+                                        <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                                            Hãy thử điều chỉnh từ khóa tìm kiếm hoặc bộ lọc để tìm thấy nhiều cơ hội
+                                            việc làm hơn
+                                        </p>
+                                        <button
+                                            onClick={() => handleSearch({ jobTitle: "", company: "", location: "" })}
+                                            className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-2xl font-semibold shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/30 transition-all duration-300 hover:scale-105"
+                                        >
+                                            Xóa bộ lọc
+                                        </button>
                                     </div>
                                 )}
 
                                 {/* Pagination */}
                                 {jobs.length > 0 && (
-                                    <Pagination
-                                        currentPage={currentPage}
-                                        totalPages={totalPages}
-                                        onPageChange={handlePageChange}
-                                    />
+                                    <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 shadow-lg border border-gray-100">
+                                        <Pagination
+                                            currentPage={currentPage}
+                                            totalPages={totalPages}
+                                            onPageChange={handlePageChange}
+                                        />
+                                    </div>
                                 )}
                             </>
                         )}
@@ -236,7 +309,6 @@ const SearchPage = () => {
                 </div>
             </div>
 
-            {/* Footer */}
             <Footer />
         </div>
     );
