@@ -1,0 +1,162 @@
+[
+  {
+    "_id": "60dd20525d2bb4db8e424150",
+    "user": "60dd20525d2bb4db8e424142",
+    "skills": ["JavaScript", "React", "Node.js", "HTML", "CSS", "Git"],
+    "education": [
+      {
+        "institution": "University of Technology",
+        "degree": "Bachelor of Computer Science",
+        "field": "Software Engineering",
+        "startDate": "2019-09-01T00:00:00.000Z",
+        "endDate": "2023-06-01T00:00:00.000Z",
+        "description": "Focused on full-stack web development and software engineering principles"
+      }
+    ],
+    "experience": [
+      {
+        "company": "WebDev Solutions",
+        "position": "Junior Frontend Developer",
+        "startDate": "2023-07-01T00:00:00.000Z",
+        "endDate": "2024-12-01T00:00:00.000Z",
+        "description": "Developed responsive web applications using React and modern JavaScript frameworks"
+      }
+    ],
+    "about": "Passionate frontend developer with 2 years of experience in creating user-friendly web applications. Love learning new technologies and solving complex problems.",
+    "location": "Ho Chi Minh City, Vietnam",
+    "phone": "+84901234567",
+    "socialLinks": {
+      "linkedin": "https://linkedin.com/in/johndoe",
+      "github": "https://github.com/johndoe",
+      "website": "https://johndoe.dev"
+    },
+    "languages": [
+      {
+        "name": "Vietnamese",
+        "proficiency": "Native"
+      },
+      {
+        "name": "English",
+        "proficiency": "Fluent"
+      }
+    ],
+    "projects": [
+      {
+        "title": "E-commerce Website",
+        "description": "Built a full-stack e-commerce platform with React and Node.js",
+        "technologies": ["React", "Node.js", "MongoDB", "Express"],
+        "link": "https://github.com/johndoe/ecommerce-project",
+        "startDate": "2023-03-01T00:00:00.000Z",
+        "endDate": "2023-05-01T00:00:00.000Z"
+      }
+    ],
+    "createdAt": "2023-01-15T08:30:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "60dd20525d2bb4db8e424151",
+    "user": "60dd20525d2bb4db8e424143",
+    "skills": ["Python", "Django", "PostgreSQL", "React", "Machine Learning"],
+    "education": [
+      {
+        "institution": "Ho Chi Minh City University of Technology",
+        "degree": "Master of Computer Science",
+        "field": "Artificial Intelligence",
+        "startDate": "2020-09-01T00:00:00.000Z",
+        "endDate": "2022-06-01T00:00:00.000Z",
+        "description": "Specialized in machine learning and data analysis"
+      }
+    ],
+    "experience": [
+      {
+        "company": "DataTech Corp",
+        "position": "Backend Developer",
+        "startDate": "2022-07-01T00:00:00.000Z",
+        "endDate": "2024-01-01T00:00:00.000Z",
+        "description": "Developed scalable backend services and RESTful APIs using Python and Django"
+      }
+    ],
+    "about": "Experienced backend developer with expertise in Python and machine learning. Passionate about building scalable systems and data-driven applications.",
+    "location": "Ho Chi Minh City, Vietnam",
+    "phone": "+84907654321",
+    "socialLinks": {
+      "linkedin": "https://linkedin.com/in/janesmith",
+      "github": "https://github.com/janesmith"
+    },
+    "languages": [
+      {
+        "name": "Vietnamese",
+        "proficiency": "Native"
+      },
+      {
+        "name": "English",
+        "proficiency": "Advanced"
+      }
+    ],
+    "projects": [
+      {
+        "title": "ML Prediction System",
+        "description": "Built a machine learning system for sales prediction",
+        "technologies": ["Python", "TensorFlow", "Django", "PostgreSQL"],
+        "link": "https://github.com/janesmith/ml-prediction",
+        "startDate": "2023-01-01T00:00:00.000Z",
+        "endDate": "2023-04-01T00:00:00.000Z"
+      }
+    ],
+    "createdAt": "2023-01-16T09:15:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "60dd20525d2bb4db8e424152",
+    "user": "60dd20525d2bb4db8e424147",
+    "skills": ["Java", "Spring Boot", "MySQL", "Docker", "AWS"],
+    "education": [
+      {
+        "institution": "FPT University",
+        "degree": "Bachelor of Information Technology",
+        "field": "Software Engineering",
+        "startDate": "2018-09-01T00:00:00.000Z",
+        "endDate": "2022-06-01T00:00:00.000Z",
+        "description": "Studied software development and system architecture"
+      }
+    ],
+    "experience": [
+      {
+        "company": "Enterprise Solutions Ltd",
+        "position": "Java Developer",
+        "startDate": "2022-08-01T00:00:00.000Z",
+        "endDate": "2024-10-01T00:00:00.000Z",
+        "description": "Developed enterprise-level applications using Java Spring Boot framework"
+      }
+    ],
+    "about": "Java developer with strong background in enterprise application development. Experienced in microservices architecture and cloud deployment.",
+    "location": "Ho Chi Minh City, Vietnam",
+    "phone": "+84912345678",
+    "socialLinks": {
+      "linkedin": "https://linkedin.com/in/davidbrown",
+      "github": "https://github.com/davidbrown"
+    },
+    "languages": [
+      {
+        "name": "Vietnamese",
+        "proficiency": "Native"
+      },
+      {
+        "name": "English",
+        "proficiency": "Intermediate"
+      }
+    ],
+    "projects": [
+      {
+        "title": "Microservices Platform",
+        "description": "Built a microservices platform for enterprise clients",
+        "technologies": ["Java", "Spring Boot", "Docker", "Kubernetes", "AWS"],
+        "link": "https://github.com/davidbrown/microservices-platform",
+        "startDate": "2023-06-01T00:00:00.000Z",
+        "endDate": "2023-12-01T00:00:00.000Z"
+      }
+    ],
+    "createdAt": "2023-01-18T14:30:00.000Z",
+    "__v": 0
+  }
+] 

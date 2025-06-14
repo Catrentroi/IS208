@@ -1,0 +1,112 @@
+[
+  {
+    "_id": "604d20525d2bb4db8e424176d6d",
+    "title": "Frontend Developer",
+    "description": "We are looking for a talented Frontend Developer to join our team",
+    "requirements": "At least 2 years of experience with React",
+    "company": "Tech Company",
+    "location": "Ho Chi Minh City",
+    "salary": {
+      "min": 15000000,
+      "max": 25000000,
+      "currency": "VND"
+    },
+    "jobType": "Full-time",
+    "recruiter": "68d4be60e11170424142b9a",
+    "skills": ["React", "JavaScript", "HTML", "CSS"],
+    "experience": "Mid level",
+    "educationLevel": "Bachelor's Degree",
+    "applicationDeadline": "2024-12-31T23:59:59.000Z",
+    "status": "Open",
+    "createdAt": "2025-01-07T10:19:22.700Z",
+    "__v": 0
+  },
+  {
+    "_id": "604d20525d2bb4db8e424176d6e",
+    "title": "Backend Developer",
+    "description": "Join our backend team to build scalable server-side applications using Node.js and Express. You will work on designing APIs, database architecture, and ensuring system performance.",
+    "requirements": "3+ years experience with Node.js, Express, MongoDB. Strong understanding of RESTful APIs and microservices architecture.",
+    "company": "Tech Company",
+    "location": "Ho Chi Minh City",
+    "salary": {
+      "min": 20000000,
+      "max": 35000000,
+      "currency": "VND"
+    },
+    "jobType": "Full-time",
+    "recruiter": "68d4be60e11170424142b9a",
+    "skills": ["Node.js", "Express", "MongoDB", "REST API", "JavaScript"],
+    "experience": "Mid level",
+    "educationLevel": "Bachelor's Degree",
+    "applicationDeadline": "2024-12-15T23:59:59.000Z",
+    "status": "Open",
+    "createdAt": "2023-01-20T08:00:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "604d20525d2bb4db8e424176d6f",
+    "title": "Full Stack Developer",
+    "description": "We're seeking a versatile Full Stack Developer to work on both frontend and backend development. You'll be responsible for creating complete web applications from conception to deployment.",
+    "requirements": "4+ years of experience with React, Node.js, and database technologies. Experience with cloud platforms is a plus.",
+    "company": "InnovateTech Startup",
+    "location": "Remote",
+    "salary": {
+      "min": 25000000,
+      "max": 40000000,
+      "currency": "VND"
+    },
+    "jobType": "Remote",
+    "recruiter": "68d4be60e11170424142b9c",
+    "skills": ["React", "Node.js", "MongoDB", "AWS", "Docker"],
+    "experience": "Senior level",
+    "educationLevel": "Bachelor's Degree",
+    "applicationDeadline": "2024-11-30T23:59:59.000Z",
+    "status": "Open",
+    "createdAt": "2023-01-22T09:30:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "604d20525d2bb4db8e424176d70",
+    "title": "Data Scientist",
+    "description": "Join our AI team to develop machine learning models and analyze large datasets. You'll work on predictive analytics and data-driven solutions for our clients.",
+    "requirements": "Master's degree in Data Science or related field. 3+ years experience with Python, TensorFlow, and statistical analysis.",
+    "company": "InnovateTech Startup",
+    "location": "Ho Chi Minh City",
+    "salary": {
+      "min": 30000000,
+      "max": 50000000,
+      "currency": "VND"
+    },
+    "jobType": "Full-time",
+    "recruiter": "68d4be60e11170424142b9c",
+    "skills": ["Python", "TensorFlow", "Machine Learning", "Statistics", "SQL"],
+    "experience": "Senior level",
+    "educationLevel": "Master's Degree",
+    "applicationDeadline": "2024-12-20T23:59:59.000Z",
+    "status": "Open",
+    "createdAt": "2023-01-25T14:15:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "604d20525d2bb4db8e424176d71",
+    "title": "DevOps Engineer",
+    "description": "We need a DevOps Engineer to manage our cloud infrastructure and CI/CD pipelines. You'll ensure scalability, reliability, and security of our applications.",
+    "requirements": "3+ years with AWS/Azure, Docker, Kubernetes, Jenkins. Experience with infrastructure as code and monitoring tools.",
+    "company": "Tech Company",
+    "location": "Ho Chi Minh City",
+    "salary": {
+      "min": 25000000,
+      "max": 40000000,
+      "currency": "VND"
+    },
+    "jobType": "Full-time",
+    "recruiter": "68d4be60e11170424142b9b",
+    "skills": ["AWS", "Docker", "Kubernetes", "Jenkins", "Terraform"],
+    "experience": "Mid level",
+    "educationLevel": "Bachelor's Degree",
+    "applicationDeadline": "2024-12-10T23:59:59.000Z",
+    "status": "Open",
+    "createdAt": "2023-01-28T11:00:00.000Z",
+    "__v": 0
+  }
+] 

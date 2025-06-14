@@ -1,0 +1,54 @@
+[
+  {
+    "_id": "60dd20525d2bb4db8e424160",
+    "candidate": "60dd20525d2bb4db8e424150",
+    "title": "John Doe - Frontend Developer Resume",
+    "file": {
+      "url": "https://storage.example.com/resumes/john-doe-resume.pdf",
+      "filename": "john-doe-resume.pdf",
+      "fileType": "pdf"
+    },
+    "isDefault": true,
+    "createdAt": "2023-01-15T08:45:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "60dd20525d2bb4db8e424161",
+    "candidate": "60dd20525d2bb4db8e424151",
+    "title": "Jane Smith - Backend Developer Resume",
+    "file": {
+      "url": "https://storage.example.com/resumes/jane-smith-resume.pdf",
+      "filename": "jane-smith-resume.pdf",
+      "fileType": "pdf"
+    },
+    "isDefault": true,
+    "createdAt": "2023-01-16T09:30:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "60dd20525d2bb4db8e424162",
+    "candidate": "60dd20525d2bb4db8e424152",
+    "title": "David Brown - Java Developer Resume",
+    "file": {
+      "url": "https://storage.example.com/resumes/david-brown-resume.pdf",
+      "filename": "david-brown-resume.pdf",
+      "fileType": "pdf"
+    },
+    "isDefault": true,
+    "createdAt": "2023-01-18T14:45:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "60dd20525d2bb4db8e424163",
+    "candidate": "60dd20525d2bb4db8e424151",
+    "title": "Jane Smith - ML Engineer Resume",
+    "file": {
+      "url": "https://storage.example.com/resumes/jane-smith-ml-resume.pdf",
+      "filename": "jane-smith-ml-resume.pdf",
+      "fileType": "pdf"
+    },
+    "isDefault": false,
+    "createdAt": "2023-02-01T10:00:00.000Z",
+    "__v": 0
+  }
+] 

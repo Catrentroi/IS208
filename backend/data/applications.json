@@ -1,0 +1,86 @@
+[
+  {
+    "_id": "60dd20525d2bb4db8e424170",
+    "job": "604d20525d2bb4db8e424176d6d",
+    "candidate": "60dd20525d2bb4db8e424150",
+    "resume": "60dd20525d2bb4db8e424160",
+    "coverLetter": "Dear Hiring Manager,\n\nI am writing to express my strong interest in the Frontend Developer position at Tech Company. With my 2+ years of experience in React development and passion for creating user-friendly interfaces, I believe I would be a valuable addition to your team.\n\nMy experience at WebDev Solutions has given me hands-on experience with modern JavaScript frameworks and responsive design principles. I am particularly excited about the opportunity to work with your tech stack and contribute to innovative web applications.\n\nThank you for considering my application. I look forward to hearing from you.\n\nBest regards,\nJohn Doe",
+    "status": "Under Review",
+    "notes": [
+      {
+        "text": "Strong React experience, matches job requirements well",
+        "createdBy": "60dd20525d2bb4db8e424144",
+        "createdAt": "2023-02-15T10:30:00.000Z"
+      }
+    ],
+    "createdAt": "2023-02-10T09:00:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "60dd20525d2bb4db8e424171",
+    "job": "604d20525d2bb4db8e424176d6e",
+    "candidate": "60dd20525d2bb4db8e424151",
+    "resume": "60dd20525d2bb4db8e424161",
+    "coverLetter": "Dear Hiring Team,\n\nI am excited to apply for the Backend Developer position at Tech Company. With my extensive experience in Node.js, Express, and MongoDB, along with my strong understanding of RESTful APIs and microservices architecture, I am confident I can contribute significantly to your backend development team.\n\nIn my previous role at DataTech Corp, I successfully developed and maintained scalable backend services that handled millions of requests daily. I am particularly interested in your focus on system performance and scalability.\n\nI would welcome the opportunity to discuss how my skills and experience align with your team's needs.\n\nSincerely,\nJane Smith",
+    "status": "Shortlisted",
+    "notes": [
+      {
+        "text": "Excellent backend experience, perfect match for our tech stack",
+        "createdBy": "60dd20525d2bb4db8e424144",
+        "createdAt": "2023-02-12T14:15:00.000Z"
+      },
+      {
+        "text": "Proceed to technical interview",
+        "createdBy": "60dd20525d2bb4db8e424145",
+        "createdAt": "2023-02-13T09:30:00.000Z"
+      }
+    ],
+    "createdAt": "2023-02-08T11:15:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "60dd20525d2bb4db8e424172",
+    "job": "604d20525d2bb4db8e424176d6f",
+    "candidate": "60dd20525d2bb4db8e424152",
+    "resume": "60dd20525d2bb4db8e424162",
+    "coverLetter": "Hello InnovateTech Team,\n\nI am writing to apply for the Full Stack Developer position. While my primary experience is in Java and Spring Boot, I have been actively learning React and Node.js to expand my full-stack capabilities.\n\nMy experience with microservices architecture and cloud deployment (AWS) aligns well with your requirements. I am particularly excited about the remote work opportunity and the chance to work with cutting-edge technologies in a startup environment.\n\nI am eager to bring my strong problem-solving skills and enterprise development experience to your innovative team.\n\nBest regards,\nDavid Brown",
+    "status": "Pending",
+    "notes": [],
+    "createdAt": "2023-02-18T16:00:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "60dd20525d2bb4db8e424173",
+    "job": "604d20525d2bb4db8e424176d70",
+    "candidate": "60dd20525d2bb4db8e424151",
+    "resume": "60dd20525d2bb4db8e424163",
+    "coverLetter": "Dear InnovateTech Hiring Team,\n\nI am thrilled to apply for the Data Scientist position. My Master's degree in Computer Science with specialization in AI, combined with practical experience in machine learning and statistical analysis, makes me an ideal candidate for this role.\n\nI have hands-on experience with Python, TensorFlow, and statistical modeling from my work on the ML Prediction System project. I am passionate about leveraging data to drive business insights and would love to contribute to your AI initiatives.\n\nThank you for your consideration.\n\nBest regards,\nJane Smith",
+    "status": "Interviewing",
+    "notes": [
+      {
+        "text": "Strong ML background, proceeding to technical interview",
+        "createdBy": "60dd20525d2bb4db8e424148",
+        "createdAt": "2023-02-20T13:45:00.000Z"
+      }
+    ],
+    "createdAt": "2023-02-16T12:30:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "60dd20525d2bb4db8e424174",
+    "job": "604d20525d2bb4db8e424176d71",
+    "candidate": "60dd20525d2bb4db8e424152",
+    "resume": "60dd20525d2bb4db8e424162",
+    "coverLetter": "Dear Tech Company Team,\n\nI am interested in the DevOps Engineer position. While my primary background is in Java development, I have gained substantial experience with Docker, Kubernetes, and AWS through my work on microservices platforms.\n\nI am passionate about infrastructure automation and continuous deployment practices. My experience with enterprise-level applications has given me insights into scalability and reliability requirements that would be valuable in a DevOps role.\n\nI would appreciate the opportunity to discuss how I can contribute to your infrastructure team.\n\nSincerely,\nDavid Brown",
+    "status": "Rejected",
+    "notes": [
+      {
+        "text": "Good technical skills but lacks dedicated DevOps experience",
+        "createdBy": "60dd20525d2bb4db8e424145",
+        "createdAt": "2023-02-25T11:20:00.000Z"
+      }
+    ],
+    "createdAt": "2023-02-22T14:00:00.000Z",
+    "__v": 0
+  }
+] 

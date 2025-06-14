@@ -1,0 +1,65 @@
+[
+  {
+    "_id": "60dd20525d2bb4db8e424142",
+    "name": "John Doe",
+    "email": "john.doe@example.com",
+    "password": "$2a$10$rQVhPPmcjDhYSoFQqm.dDuSWe5I8V9rMxDHcuS3.4VbLVYvzxmxM.",
+    "role": "candidate",
+    "createdAt": "2023-01-15T08:30:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "60dd20525d2bb4db8e424143",
+    "name": "Jane Smith",
+    "email": "jane.smith@example.com",
+    "password": "$2a$10$rQVhPPmcjDhYSoFQqm.dDuSWe5I8V9rMxDHcuS3.4VbLVYvzxmxM.",
+    "role": "candidate",
+    "createdAt": "2023-01-16T09:15:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "60dd20525d2bb4db8e424144",
+    "name": "Michael Johnson",
+    "email": "michael.johnson@techcorp.com",
+    "password": "$2a$10$rQVhPPmcjDhYSoFQqm.dDuSWe5I8V9rMxDHcuS3.4VbLVYvzxmxM.",
+    "role": "recruiter",
+    "createdAt": "2023-01-10T07:45:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "60dd20525d2bb4db8e424145",
+    "name": "Sarah Wilson",
+    "email": "sarah.wilson@techcorp.com",
+    "password": "$2a$10$rQVhPPmcjDhYSoFQqm.dDuSWe5I8V9rMxDHcuS3.4VbLVYvzxmxM.",
+    "role": "recruiter",
+    "createdAt": "2023-01-12T10:20:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "60dd20525d2bb4db8e424146",
+    "name": "Admin User",
+    "email": "admin@system.com",
+    "password": "$2a$10$rQVhPPmcjDhYSoFQqm.dDuSWe5I8V9rMxDHcuS3.4VbLVYvzxmxM.",
+    "role": "admin",
+    "createdAt": "2023-01-01T00:00:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "60dd20525d2bb4db8e424147",
+    "name": "David Brown",
+    "email": "david.brown@example.com",
+    "password": "$2a$10$rQVhPPmcjDhYSoFQqm.dDuSWe5I8V9rMxDHcuS3.4VbLVYvzxmxM.",
+    "role": "candidate",
+    "createdAt": "2023-01-18T14:30:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "60dd20525d2bb4db8e424148",
+    "name": "Emily Davis",
+    "email": "emily.davis@startup.com",
+    "password": "$2a$10$rQVhPPmcjDhYSoFQqm.dDuSWe5I8V9rMxDHcuS3.4VbLVYvzxmxM.",
+    "role": "recruiter",
+    "createdAt": "2023-01-14T11:45:00.000Z",
+    "__v": 0
+  }
+] 

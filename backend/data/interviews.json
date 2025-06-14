@@ -1,0 +1,90 @@
+[
+  {
+    "_id": "60dd20525d2bb4db8e424180",
+    "application": "60dd20525d2bb4db8e424171",
+    "interviewer": "60dd20525d2bb4db8e424144",
+    "scheduledAt": "2023-02-20T14:00:00.000Z",
+    "duration": 60,
+    "location": "Video",
+    "locationDetails": "Google Meet: https://meet.google.com/abc-defg-hij",
+    "status": "Completed",
+    "feedback": {
+      "rating": 4,
+      "strengths": [
+        "Strong technical knowledge in Node.js and Express",
+        "Good understanding of database design",
+        "Clear communication skills"
+      ],
+      "weaknesses": [
+        "Limited experience with microservices",
+        "Could improve system design knowledge"
+      ],
+      "notes": "Candidate showed solid backend development skills and answered most technical questions correctly. Has good potential for growth in our team environment.",
+      "recommendation": "Proceed"
+    },
+    "createdAt": "2023-02-15T10:00:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "60dd20525d2bb4db8e424181",
+    "application": "60dd20525d2bb4db8e424173",
+    "interviewer": "60dd20525d2bb4db8e424148",
+    "scheduledAt": "2023-02-25T10:30:00.000Z",
+    "duration": 90,
+    "location": "Video",
+    "locationDetails": "Zoom Meeting: https://zoom.us/j/123456789",
+    "status": "Scheduled",
+    "feedback": {},
+    "createdAt": "2023-02-22T09:15:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "60dd20525d2bb4db8e424182",
+    "application": "60dd20525d2bb4db8e424170",
+    "interviewer": "60dd20525d2bb4db8e424145",
+    "scheduledAt": "2023-03-01T15:00:00.000Z",
+    "duration": 45,
+    "location": "In-person",
+    "locationDetails": "Tech Company Office - Room 301, 123 Nguyen Hue Street, District 1, Ho Chi Minh City",
+    "status": "Scheduled",
+    "feedback": {},
+    "createdAt": "2023-02-28T11:30:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "60dd20525d2bb4db8e424183",
+    "application": "60dd20525d2bb4db8e424171",
+    "interviewer": "60dd20525d2bb4db8e424145",
+    "scheduledAt": "2023-02-28T16:00:00.000Z",
+    "duration": 30,
+    "location": "Phone",
+    "locationDetails": "+84 28 1234 5678",
+    "status": "Completed",
+    "feedback": {
+      "rating": 5,
+      "strengths": [
+        "Excellent problem-solving approach",
+        "Strong architectural thinking",
+        "Great cultural fit"
+      ],
+      "weaknesses": [],
+      "notes": "Outstanding candidate! Jane demonstrated exceptional technical skills and showed great enthusiasm for our projects. Her experience with scalable systems is exactly what we need.",
+      "recommendation": "Proceed"
+    },
+    "createdAt": "2023-02-25T14:20:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "60dd20525d2bb4db8e424184",
+    "application": "60dd20525d2bb4db8e424174",
+    "interviewer": "60dd20525d2bb4db8e424145",
+    "scheduledAt": "2023-02-27T13:30:00.000Z",
+    "duration": 60,
+    "location": "Video",
+    "locationDetails": "Microsoft Teams: https://teams.microsoft.com/l/meetup-join/...",
+    "status": "Cancelled",
+    "feedback": {},
+    "createdAt": "2023-02-24T16:45:00.000Z",
+    "__v": 0
+  }
+] 
