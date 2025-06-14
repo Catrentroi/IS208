@@ -16,6 +16,11 @@ const HRCandidateManagement = React.lazy(() => import("./pages/HRCandidateManage
 const HRTestManagement = React.lazy(() => import("./pages/HRTestManagement"));
 const HRAccountPage = React.lazy(() => import("./pages/HRAccountPage"));
 
+// Authentication pages
+const LoginPage = React.lazy(() => import("./pages/LoginPage"));
+const RegisterPage = React.lazy(() => import("./pages/RegisterPage"));
+const ForgotPasswordPage = React.lazy(() => import("./pages/ForgotPasswordPage"));
+
 // Modern loading component
 const LoadingSpinner = () => (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center">
